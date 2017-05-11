@@ -97,13 +97,6 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
         initMap();
         mFragmentHistory = new FragmentHistory();
         mFragmentSettings = new FragmentSettings();
-        /*mapFragment = (View)findViewById(R.id.mapFragment);*/
-
-        /*DBHelperProvider dbHelperProvider = new DBHelperProvider(getApplicationContext());
-        dbHelperProvider.clearHistory();*/
-        /*for (int i = 0; i < 10; i ++){
-            dbHelperProvider.addItemHistoryInDB(new ItemHistory(10F, "г.Омск проспект Мира 48", "15dec, 15:2" + i,54.99666F, 73.35692F, "Имя 1", "8-951-536-7845"));
-        }*/
 
     }
 
