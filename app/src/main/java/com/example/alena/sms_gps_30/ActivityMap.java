@@ -56,6 +56,8 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
     private AutoCompleteTextView mAutoCompleteTextView;
     private GoogleMap mGoogleMap;
 
+    public static boolean CurrentlyRunning = false;
+
     public static final String TAG = "SMSGPS3.0";
     public static final String APP_PREFERENCES = "com.example.alena.sms_gps_30";
     public static final String LAST_NAME = "last name";
@@ -97,6 +99,25 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
         mFragmentHistory = new FragmentHistory();
         mFragmentSettings = new FragmentSettings();
 
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        CurrentlyRunning = true;
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        CurrentlyRunning = false;
+    }
+
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        showLastLocation();
     }
 
     private void initImageButton(ImageButton imageButton) {
@@ -252,6 +273,28 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
         }
     }
 
+    public void showNewLocation(String name, String number, LatLng latLng, float accuracy) {
+        CameraPosition cameraPosition = new CameraPosition.Builder()
+                .target(loadLatLng())
+                .zoom(mGoogleMap.getMaxZoomLevel() - 5)
+                .bearing(0)
+                .tilt(0)
+                .build();
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newCameraPosition(cameraPosition);
+        mGoogleMap.animateCamera(cameraUpdate);
+        mGoogleMap.addMarker(new MarkerOptions().position(loadLatLng()).title(loadName() + " - " + loadData()));
+
+        CircleOptions circleOptions = new CircleOptions()
+                .center(loadLatLng())
+                .radius(loadAccuracy())
+                .fillColor(Color.TRANSPARENT)
+                .strokeColor(Color.RED)
+                .strokeWidth(4);
+
+        mGoogleMap.addCircle(circleOptions);
+    }
+
+
     public void saveName(String name) {
         sPref = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sPref.edit();
@@ -296,6 +339,7 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
         sPref = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
         return sPref.getString(LAST_NAME, "");
     }
+
 
     private LatLng loadLatLng() {
         sPref = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);

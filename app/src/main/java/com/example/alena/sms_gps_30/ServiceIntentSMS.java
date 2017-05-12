@@ -11,6 +11,7 @@ import android.util.Log;
 
 import com.example.alena.sms_gps_30.help_classes.ItemHistory;
 import com.example.alena.sms_gps_30.help_classes.SaveInHistoryTask;
+import com.google.android.gms.maps.model.LatLng;
 
 public class ServiceIntentSMS extends IntentService {
 
@@ -59,18 +60,28 @@ public class ServiceIntentSMS extends IntentService {
             //открыть окно с картой
             Intent intentActivityMaps = new Intent(getApplicationContext(), ActivityMap.class);
             saveMessageInHistory(sms_from, sms_body);
-            saveInSharPref(getNameByNumber(sms_from),
+            String name = getNameByNumber(sms_from);
+            saveInSharPref(name,
                     sms_from,
                     differenceTime,
                     Float.valueOf(latitude),
                     Float.valueOf(longitude),
                     Float.valueOf(accuracy));
 
-            /*intentActivityMaps.putExtra("sms_from", sms_from);
-            intentActivityMaps.putExtra("sms_body", sms_body);*/
-            intentActivityMaps.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
+            /*if (ActivityMap.CurrentlyRunning) {
+                ActivityMap activityMap = new ActivityMap();
+
+                *//*activityMap.showLastLocation();*//*
+                activityMap.showNewLocation(name, sms_from,  new LatLng(Float.valueOf(latitude), Float.valueOf(longitude)), Float.valueOf(accuracy));
+            } else {
+
+                intentActivityMaps.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                getApplicationContext().startActivity(intentActivityMaps);
+            }*/
+            intentActivityMaps.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             getApplicationContext().startActivity(intentActivityMaps);
+
             Log.d(TAG, "стартовал активность с картой");
         }
     }

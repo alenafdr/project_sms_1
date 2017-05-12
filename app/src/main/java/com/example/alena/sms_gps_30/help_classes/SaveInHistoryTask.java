@@ -86,7 +86,7 @@ public class SaveInHistoryTask extends AsyncTask<Void, Void, Void> {
                 ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
                 ContactsContract.CommonDataKinds.Phone.NUMBER};
         String selection = ContactsContract.CommonDataKinds.Phone.NUMBER + " = ?";
-        String[] selectionArgs = new String[] {"+7" + numberForSearch };
+        String[] selectionArgs = new String[] {"%" + numberForSearch + "%"};
 
         Cursor phones = cr.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, columns, selection, selectionArgs, null);
 
@@ -98,20 +98,6 @@ public class SaveInHistoryTask extends AsyncTask<Void, Void, Void> {
         } catch (Exception e) {
             e.printStackTrace();
             return name;
-        }
-
-        if (name.equals("")) {
-            selectionArgs = new String[] {"8" + numberForSearch };
-            phones = cr.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, columns, selection, selectionArgs, null);
-            try {
-                while (phones.moveToNext() && name.equals(""))
-                {
-                    name = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                return name;
-            }
         }
 
         phones.close();
@@ -127,7 +113,6 @@ public class SaveInHistoryTask extends AsyncTask<Void, Void, Void> {
         } else {
             address = getAddressHTTP(lat, lng);
         }
-
         return address;
 
     }
