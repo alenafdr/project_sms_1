@@ -99,7 +99,6 @@ public class SaveInHistoryTask extends AsyncTask<Void, Void, Void> {
             e.printStackTrace();
             return name;
         }
-
         phones.close();
         return name;
     }

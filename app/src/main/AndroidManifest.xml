@@ -23,7 +23,7 @@
         <activity
             android:name=".ActivityMap"
             android:theme="@style/splashScreenTheme"
-            android:launchMode="singleTask">
+            android:launchMode="singleTask" >
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

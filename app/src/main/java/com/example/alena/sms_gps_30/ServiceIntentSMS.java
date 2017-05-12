@@ -68,17 +68,6 @@ public class ServiceIntentSMS extends IntentService {
                     Float.valueOf(longitude),
                     Float.valueOf(accuracy));
 
-
-            /*if (ActivityMap.CurrentlyRunning) {
-                ActivityMap activityMap = new ActivityMap();
-
-                *//*activityMap.showLastLocation();*//*
-                activityMap.showNewLocation(name, sms_from,  new LatLng(Float.valueOf(latitude), Float.valueOf(longitude)), Float.valueOf(accuracy));
-            } else {
-
-                intentActivityMaps.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                getApplicationContext().startActivity(intentActivityMaps);
-            }*/
             intentActivityMaps.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             getApplicationContext().startActivity(intentActivityMaps);
 
