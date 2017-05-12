@@ -67,7 +67,6 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
 
     FragmentHistory mFragmentHistory;
     FragmentSettings mFragmentSettings;
-    View mapFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,11 +129,11 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
     }
 
     private void initAutoCompleteTextView() {
-        mAutoCompleteTextView.setAdapter(new ContactsAdapter(getApplicationContext(), getNumbersPhoneBook(this.getContentResolver())));
+        mAutoCompleteTextView.setAdapter(new ContactsAdapter(getApplicationContext()));
 
-        if (!loadName().equals("")){
+        /*if (!loadName().equals("")){
             mAutoCompleteTextView.setText(loadName());
-        }
+        }*/
 
         mAutoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -147,37 +146,6 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
             }
         });
     }
-
-   /* private void showLastLocation(String number) {
-        DBHelperProvider dbHelperProvider = new DBHelperProvider(getApplicationContext());
-        ItemHistory itemHistory = dbHelperProvider.getLastPositionByNumber(number);
-        if (itemHistory != null) {
-            updateMap(itemHistory);
-        }
-    }
-
-    private void updateMap(ItemHistory itemHistory){
-        LatLng latLng = new LatLng(itemHistory.getLatitude(), itemHistory.getLongitude());
-        CameraPosition cameraPosition = new CameraPosition.Builder()
-                .target(latLng)
-                .zoom(mGoogleMap.getMaxZoomLevel() - 5)
-                .bearing(0)
-                .tilt(0)
-                .build();
-        CameraUpdate cameraUpdate = CameraUpdateFactory.newCameraPosition(cameraPosition);
-        mGoogleMap.animateCamera(cameraUpdate);
-        mGoogleMap.addMarker(new MarkerOptions().position(latLng).title(itemHistory.getName() + " - " + itemHistory.getData()));
-
-        CircleOptions circleOptions = new CircleOptions()
-                .center(latLng)
-                .radius(itemHistory.getAccuracy())
-                .fillColor(Color.TRANSPARENT)
-                .strokeColor(Color.RED)
-                .strokeWidth(4);
-
-        mGoogleMap.addCircle(circleOptions);
-    }*/
-/*
 
 
    /* @Override
@@ -354,36 +322,6 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
     private String loadData(){
         sPref = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
         return sPref.getString(LAST_DATA, "");
-    }
-
-
-
-    public List<Contact> getNumbersPhoneBook(ContentResolver cr)
-    {
-        List<Contact> contacts = new ArrayList<>();
-        Cursor phones = cr.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,null,null, null);
-        while (phones.moveToNext())
-        {
-            String name = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
-            String phoneNumber = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-            int contactId = phones.getInt(phones.getColumnIndex(ContactsContract.Contacts._ID));
-            Bitmap image = GetContactPhoto(getApplicationContext(), contactId);
-            contacts.add(new Contact(image, name, phoneNumber));
-        }
-        phones.close(); // close cursor
-        return  contacts;
-    }
-
-    final public Bitmap GetContactPhoto(Context context, int contactId)
-    {
-        ContentResolver cr = context.getContentResolver();
-        Uri uri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, contactId);
-        InputStream input = ContactsContract.Contacts.openContactPhotoInputStream(cr, uri);
-        if (input == null) {
-            Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_avatar);
-            return bitmap;
-        }
-        return BitmapFactory.decodeStream(input);
     }
 
     private void sendSMS(String phoneNumber)

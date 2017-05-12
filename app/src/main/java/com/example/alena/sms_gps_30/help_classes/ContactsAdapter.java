@@ -1,6 +1,13 @@
 package com.example.alena.sms_gps_30.help_classes;
 
+import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Context;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -16,6 +23,7 @@ import android.widget.TextView;
 import com.example.alena.sms_gps_30.ActivityMap;
 import com.example.alena.sms_gps_30.R;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,19 +32,14 @@ public class ContactsAdapter extends BaseAdapter implements Filterable {
     final String TAG = ActivityMap.TAG + " CONT_ADAPT";
 
     private List<Contact> listContacts;
-    private List<Contact> listForFind;
     private Context mContext;
-    /*private int resoursItem;*/
+    private ContentResolver cr;
     private LayoutInflater lInflater;
-    List<Contact> contactsForFind;
 
-    public ContactsAdapter (Context context, List<Contact> contacts) {
-        mContext = context;
-        listForFind = contacts;
-        lInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        /*for (Contact c: contacts){
-            Log.d(TAG, "получено. Name: " + c.getName() + ", Number: " + c.getNumber());
-        }*/
+    public ContactsAdapter (Context context) {
+        this.mContext = context;
+        this.lInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        this.cr = context.getContentResolver();
     }
 
     @Override
@@ -107,16 +110,66 @@ public class ContactsAdapter extends BaseAdapter implements Filterable {
         return filter;
     }
 
-    public List<Contact> findContacts(String name){
+    public List<Contact> findContacts(String stringForSearch){
         List<Contact> resultList = new ArrayList<Contact>();
-        for (Contact c : listForFind){
-            if ((c.getName().toLowerCase().contains(name.toLowerCase())) || (c.getNumber().contains(name))){
-                resultList.add(c);
-                /*Log.d(TAG, "добавлен в список результатов " + c.getName());*/
+
+        String[] columns = {ContactsContract.CommonDataKinds.Phone._ID,
+                ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
+                ContactsContract.CommonDataKinds.Phone.NUMBER};
+        String selection = ContactsContract.CommonDataKinds.Phone.NUMBER + " LIKE ?";
+        String[] selectionArgs = new String[] {"%" + stringForSearch + "%"};
+
+        Cursor phones = cr.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, columns, selection, selectionArgs, null);
+
+        try {
+            while (phones.moveToNext())
+            {
+                String name = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
+                String phoneNumber = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                int contactId = phones.getInt(phones.getColumnIndex(ContactsContract.Contacts._ID));
+                Bitmap image = GetContactPhoto(contactId);
+                resultList.add(new Contact(image, name, phoneNumber));
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.d(TAG, "Ошибка " + e.toString());
         }
+
+        selection = ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " LIKE ?";
+        phones = cr.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, columns, selection, selectionArgs, null);
+
+        try {
+            while (phones.moveToNext())
+            {
+                String name = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
+                String phoneNumber = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                int contactId = phones.getInt(phones.getColumnIndex(ContactsContract.Contacts._ID));
+                Bitmap image = GetContactPhoto(contactId);
+                resultList.add(new Contact(image, name, phoneNumber));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.d(TAG, "Ошибка " + e.toString());
+        }
+
+        try {
+            phones.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         return resultList;
     }
 
-
+    final public Bitmap GetContactPhoto(int contactId)
+    {
+        ContentResolver cr = mContext.getContentResolver();
+        Uri uri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, contactId);
+        InputStream input = ContactsContract.Contacts.openContactPhotoInputStream(cr, uri);
+        if (input == null) {
+            Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.ic_avatar);
+            return bitmap;
+        }
+        return BitmapFactory.decodeStream(input);
+    }
 }
