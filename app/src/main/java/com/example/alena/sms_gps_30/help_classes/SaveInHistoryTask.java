@@ -85,7 +85,7 @@ public class SaveInHistoryTask extends AsyncTask<Void, Void, Void> {
         String[] columns = {ContactsContract.CommonDataKinds.Phone._ID,
                 ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
                 ContactsContract.CommonDataKinds.Phone.NUMBER};
-        String selection = ContactsContract.CommonDataKinds.Phone.NUMBER + " = ?";
+        String selection = ContactsContract.CommonDataKinds.Phone.NUMBER + " LIKE ?";
         String[] selectionArgs = new String[] {"%" + numberForSearch + "%"};
 
         Cursor phones = cr.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, columns, selection, selectionArgs, null);
