@@ -57,6 +57,14 @@
 
             </android.support.v7.widget.Toolbar>
 
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/ic_find_me"
+                android:id="@+id/imageButtonFindMe"
+                android:background="@color/white"
+                android:layout_gravity="end|center_vertical"/>
+
         </FrameLayout>
     </android.support.design.widget.CoordinatorLayout>
     <android.support.design.widget.NavigationView

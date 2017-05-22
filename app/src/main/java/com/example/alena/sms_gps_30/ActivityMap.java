@@ -1,19 +1,13 @@
 package com.example.alena.sms_gps_30;
 
 import android.app.AlertDialog;
+import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.ContentResolver;
-import android.content.ContentUris;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.net.Uri;
-import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -28,12 +22,11 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.example.alena.sms_gps_30.help_classes.Contact;
 import com.example.alena.sms_gps_30.help_classes.ContactsAdapter;
-import com.example.alena.sms_gps_30.help_classes.DBHelperProvider;
 import com.example.alena.sms_gps_30.help_classes.FragmentSettings;
-import com.example.alena.sms_gps_30.help_classes.ItemHistory;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -45,16 +38,13 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-
 public class ActivityMap extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, FragmentHistory.onSomeEventListener {
 
     private SharedPreferences sPref;
     private DrawerLayout mDrawerLayout;
     private AutoCompleteTextView mAutoCompleteTextView;
     private GoogleMap mGoogleMap;
+    private boolean isAutoCompleteTextView = false;
 
     public static final String TAG = "SMSGPS3.0";
     public static final String APP_PREFERENCES = "com.example.alena.sms_gps_30";
@@ -75,6 +65,12 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
         setContentView(R.layout.activity_main);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
@@ -90,8 +86,10 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
         mAutoCompleteTextView = (AutoCompleteTextView) findViewById(R.id.auto_complete_text_view);
         initAutoCompleteTextView();
 
-        ImageButton imageButton = (ImageButton) findViewById(R.id.imageButtonGet);
-        initImageButton(imageButton);
+        ImageButton imageButtonGet = (ImageButton) findViewById(R.id.imageButtonGet);
+        initImageButton(imageButtonGet);
+        ImageButton imageButtonFindMeGet = (ImageButton) findViewById(R.id.imageButtonFindMe);
+        initImageButton(imageButtonFindMeGet);
 
         initMap();
         mFragmentHistory = new FragmentHistory();
@@ -105,61 +103,6 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
         showLastLocation();
     }
 
-    private void initImageButton(ImageButton imageButton) {
-        final String mMassage = "Запросить местоположение абонента ";
-        imageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AlertDialog.Builder alertDialog = new AlertDialog.Builder(ActivityMap.this);
-                alertDialog.setTitle("Внимание!")
-                        .setMessage(mMassage + loadName() + " по номеру " + loadNumber() + "?")
-                        .setCancelable(true);
-                alertDialog.setPositiveButton("Ок", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (!loadNumber().equals("")) {
-                            sendSMS(loadNumber());
-                        }
-                        dialog.cancel();
-                    }
-                });
-                alertDialog.setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-                alertDialog.show();
-            }
-        });
-    }
-
-    private void initAutoCompleteTextView() {
-        mAutoCompleteTextView.setAdapter(new ContactsAdapter(getApplicationContext()));
-
-        /*if (!loadName().equals("")){
-            mAutoCompleteTextView.setText(loadName());
-        }*/
-
-        mAutoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                Contact contact = (Contact) adapterView.getItemAtPosition(position);
-                mAutoCompleteTextView.setText(contact.getName());
-                saveName(contact.getName());
-                saveNumber(contact.getNumber());
-                /*showLastLocation(contact.getNumber());*/
-            }
-        });
-    }
-
-
-   /* @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }*/
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -178,11 +121,19 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
             ft.setCustomAnimations(R.animator.fragment_enter, 0);
             ft.replace(R.id.container, mFragmentHistory);
             ft.commit();
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+/*
+
+            getSupportActionBar().setDisplayShowHomeEnabled(true);*/
         }
 
         if (id == R.id.menu_settings) {
             ft.replace(R.id.container, mFragmentSettings);
             ft.commit();
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+/*
+
+            getSupportActionBar().setDisplayShowHomeEnabled(true);*/
         }
 
         mDrawerLayout.closeDrawer(GravityCompat.START);
@@ -192,17 +143,14 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
+        Log.d(TAG, "146 id " + id);
         if (id == R.id.action_settings) {
             return true;
         } else if (id == android.R.id.home) {
-            mDrawerLayout.openDrawer(GravityCompat.START);
+            onBackPressed();
+            return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    private void initMap() {
-        MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.mapFragment);
-        mapFragment.getMapAsync(this);
     }
 
     @Override
@@ -232,6 +180,93 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
 
         googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
     }
+
+    public void onBackPressed() {
+        FragmentManager fm = getFragmentManager();
+        if (fm.getBackStackEntryCount() > 0)
+            fm.popBackStack();
+        else
+            finish();
+    }
+
+
+    private void initMap() {
+        MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.mapFragment);
+        mapFragment.getMapAsync(this);
+    }
+
+    private void initImageButton(ImageButton imageButton) {
+        imageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isAutoCompleteTextView) {
+                    final int id = v.getId();
+                    final String mMassage;
+                    if (id == R.id.imageButtonGet) {
+                        mMassage = "Запросить местоположение абонента ";
+                    } else {
+                        mMassage = "Отправить местоположение абоненту ";
+                    }
+
+                    AlertDialog.Builder alertDialog = new AlertDialog.Builder(ActivityMap.this);
+                    alertDialog.setTitle("Внимание!")
+                            .setMessage(mMassage + loadName() + " по номеру " + loadNumber() + "?")
+                            .setCancelable(true);
+                    alertDialog.setPositiveButton("Ок", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            if (id == R.id.imageButtonGet) {
+                                sendSMS(loadNumber());
+                            } else {
+                                Intent intentSEND = new Intent(getApplicationContext(), ServiceGPS.class);
+                                intentSEND.putExtra("phoneNumber", loadNumber());
+                                getApplicationContext().startService(intentSEND);
+                            }
+                            dialog.cancel();
+                        }
+                    });
+                    alertDialog.setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+                    alertDialog.show();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Введите корректное имя или номер абонента", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    private void initAutoCompleteTextView() {
+        mAutoCompleteTextView.setAdapter(new ContactsAdapter(getApplicationContext()));
+
+        /*if (!loadName().equals("")){
+            mAutoCompleteTextView.setText(loadName());
+        }*/
+
+        mAutoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                Contact contact = (Contact) adapterView.getItemAtPosition(position);
+                mAutoCompleteTextView.setText(contact.getName());
+                saveName(contact.getName());
+                saveNumber(contact.getNumber());
+                isAutoCompleteTextView = true;
+                /*showLastLocation(contact.getNumber());*/
+            }
+        });
+    }
+
+
+   /* @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }*/
+
 
     public void showLastLocation(){
         LatLng nullLatLng = new LatLng(0, 0);

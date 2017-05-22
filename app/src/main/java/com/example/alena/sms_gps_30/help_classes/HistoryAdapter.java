@@ -40,8 +40,8 @@ public class HistoryAdapter extends BaseAdapter {
         }
 
         ItemHistory itemHistory = getItemHistory(position);
-
-        Log.d(TAG, itemHistory.getType());
+/*
+        Log.d(TAG, itemHistory.getType());*/
 
         if (itemHistory.getType().equals(ItemHistory.TYPE_SENT)){
             ((ImageView) view.findViewById(R.id.ivImage)).setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_sent));
