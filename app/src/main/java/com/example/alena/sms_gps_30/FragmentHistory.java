@@ -69,8 +69,8 @@ public class FragmentHistory extends Fragment {
         super.onStart();
         DBHelperProvider dbHelperProvider = new DBHelperProvider(getActivity());
         List<ItemHistory> itemHistoryList = dbHelperProvider.getAllHistory();
-
-        Log.d(TAG, String.valueOf(itemHistoryList.size()));
+/*
+        Log.d(TAG, String.valueOf(itemHistoryList.size()));*/
 
         HistoryAdapter historyAdapter = new HistoryAdapter(getActivity(), itemHistoryList);
         listHistory.setAdapter(historyAdapter);

@@ -17,6 +17,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -45,6 +46,7 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
     private AutoCompleteTextView mAutoCompleteTextView;
     private GoogleMap mGoogleMap;
     private boolean isAutoCompleteTextView = false;
+    private int menuItemId;
 
     public static final String TAG = "SMSGPS3.0";
     public static final String APP_PREFERENCES = "com.example.alena.sms_gps_30";
@@ -57,6 +59,8 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
 
     FragmentHistory mFragmentHistory;
     FragmentSettings mFragmentSettings;
+    NavigationView navigationView;
+    ActionBarDrawerToggle toggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,11 +78,13 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer);
         navigationView.setNavigationItemSelectedListener(this);
 
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+        navigationView.setCheckedItem(R.id.menu_map);
+
+        toggle = new ActionBarDrawerToggle(
                 this, mDrawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         mDrawerLayout.setDrawerListener(toggle);
         toggle.syncState();
@@ -103,16 +109,18 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
         showLastLocation();
     }
 
-
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
         FragmentTransaction ft = getFragmentManager().beginTransaction();
 
         if (id == R.id.menu_map) {
+
+            ft.setCustomAnimations(0, R.animator.fragment_exit);
             ft.remove(mFragmentHistory);
             ft.remove(mFragmentSettings);
             ft.commit();
+            menuItemId = R.id.menu_map;
             /*((View)findViewById(R.id.container)).setVisibility(View.INVISIBLE);*/
         }
 
@@ -121,29 +129,36 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
             ft.setCustomAnimations(R.animator.fragment_enter, 0);
             ft.replace(R.id.container, mFragmentHistory);
             ft.commit();
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-/*
-
-            getSupportActionBar().setDisplayShowHomeEnabled(true);*/
+            /*getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setHomeButtonEnabled(true);*/
+            menuItemId = R.id.menu_history;
         }
 
         if (id == R.id.menu_settings) {
             ft.replace(R.id.container, mFragmentSettings);
             ft.commit();
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-/*
-
-            getSupportActionBar().setDisplayShowHomeEnabled(true);*/
+            /*getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setHomeButtonEnabled(true);*/
+            menuItemId = R.id.menu_settings;
         }
 
         mDrawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
 
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        Log.d(TAG, "146 id " + id);
+
+        Log.d(TAG, "158 id " + id);
+
         if (id == R.id.action_settings) {
             return true;
         } else if (id == android.R.id.home) {
@@ -159,13 +174,13 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
         mGoogleMap = googleMap;
 
         UiSettings mSettingsMap = googleMap.getUiSettings();
-        /*mSettingsMap.setCompassEnabled(true); //Включили компас
+        mSettingsMap.setCompassEnabled(true); //Включили компас
         mSettingsMap.setZoomControlsEnabled(true); //Включили кнопки зума
         mSettingsMap.setMyLocationButtonEnabled(true); //Включили кнопку определения своего местоположения
         mSettingsMap.setAllGesturesEnabled(true);
-        mSettingsMap.setMapToolbarEnabled(true);*/
+        mSettingsMap.setMapToolbarEnabled(true);
 
-        mSettingsMap.setZoomControlsEnabled(true);
+       /* mSettingsMap.setZoomControlsEnabled(true);
         mSettingsMap.setCompassEnabled(true);
         mSettingsMap.setMyLocationButtonEnabled(true);
         mSettingsMap.setIndoorLevelPickerEnabled(true);
@@ -175,7 +190,7 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
         mSettingsMap.setRotateGesturesEnabled(true);
         mSettingsMap.setAllGesturesEnabled(true);
         mSettingsMap.setMapToolbarEnabled(true);
-
+*/
         showLastLocation();
 
         googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
@@ -183,10 +198,26 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
 
     public void onBackPressed() {
         FragmentManager fm = getFragmentManager();
-        if (fm.getBackStackEntryCount() > 0)
+        /*if (fm.getBackStackEntryCount() > 0)
             fm.popBackStack();
         else
-            finish();
+            finish();*/
+        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+            mDrawerLayout.closeDrawer(GravityCompat.START);
+        } else if (menuItemId != R.id.menu_map) {/*
+            navigationView.setCheckedItem(R.id.menu_map);
+*/
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            ft.setCustomAnimations(0, R.animator.fragment_exit);
+            ft.remove(mFragmentHistory);
+            ft.remove(mFragmentSettings);
+            ft.commit();
+            menuItemId = R.id.menu_map;
+        } else {
+            super.onBackPressed();
+        }
+
+
     }
 
 
