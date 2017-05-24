@@ -6,6 +6,7 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -36,14 +37,16 @@ import java.util.List;
 
 public class FragmentWhiteList extends Fragment {
 
-    private OnFragmentInteractionListener mListener;
+    public static final String WHITE_NUMBERS = "whiteNumbers";
 
-    final String TAG = ActivityMap.TAG + " FrWhiteList";
+    private OnFragmentInteractionListener mListener;
+    private SharedPreferences sPref;
+    private final String TAG = ActivityMap.TAG + " FrWhiteList";
     private boolean isAutoCompleteTextView = false;
-    AutoCompleteTextView autoCompleteTextView;
-    ImageButton imageButtonAddContact;
-    ListView whiteListListView;
-    String number;
+    private AutoCompleteTextView autoCompleteTextView;
+    private ImageButton imageButtonAddContact;
+    private ListView whiteListListView;
+    private String number;
 
     public FragmentWhiteList() {
         // Required empty public constructor
@@ -103,6 +106,24 @@ public class FragmentWhiteList extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
+
+        String stringForSaveInShP = "";
+        for (int i = 0; i < whiteListListView.getChildCount(); i++){
+            View view = whiteListListView.getChildAt(i);
+            TextView numberTextView = (TextView) view.findViewById(R.id.textViewItemContactNumber);
+            try {
+                stringForSaveInShP = stringForSaveInShP + numberTextView.getText().toString() + " ";
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        if (!stringForSaveInShP.equals("")){
+            sPref = getActivity().getSharedPreferences(ActivityMap.APP_PREFERENCES, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sPref.edit();
+            editor.putString(WHITE_NUMBERS, stringForSaveInShP);
+            editor.apply();
+        }
     }
 
     @Override
@@ -122,7 +143,6 @@ public class FragmentWhiteList extends Fragment {
                 e.printStackTrace();
                 return false;
             }
-
         }
         return false;
     }
