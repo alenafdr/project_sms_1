@@ -22,12 +22,7 @@
                 android:name="com.google.android.gms.maps.MapFragment"
 
                 />
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/container">
 
-            </FrameLayout>
 
             <android.support.v7.widget.Toolbar
                 android:layout_width="match_parent"
@@ -64,6 +59,13 @@
                 android:id="@+id/imageButtonFindMe"
                 android:background="@color/white"
                 android:layout_gravity="end|center_vertical"/>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/container">
+
+            </FrameLayout>
 
         </FrameLayout>
     </android.support.design.widget.CoordinatorLayout>
