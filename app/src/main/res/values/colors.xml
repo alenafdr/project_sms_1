@@ -6,6 +6,7 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="colorForControlActivated">#33a8ec</color>
     <color name="color_for_accuracy">#00ffffff</color>
     <color name="color_for_splash">#a6e9ff</color>
 </resources>

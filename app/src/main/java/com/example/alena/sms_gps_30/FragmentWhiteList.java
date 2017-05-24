@@ -112,11 +112,17 @@ public class FragmentWhiteList extends Fragment {
     }
 
     private boolean isNumberInList (String number) {
-
         for (int i = 0; i < whiteListListView.getChildCount(); i++){
             View view = whiteListListView.getChildAt(i);
-            TextView numberTextView = (TextView) view.findViewById(R.id.textViewItemContactNumber);
-            if (number.equals(numberTextView.getText().toString())) return  true;
+            TextView numberTextView = null;
+            try {
+                numberTextView = (TextView) view.findViewById(R.id.textViewItemContactNumber);
+                if (number.equals(numberTextView.getText().toString())) return  true;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
+
         }
         return false;
     }
