@@ -14,6 +14,7 @@ public class DBHelper extends SQLiteOpenHelper {
     final public static String NAME_DATA_BASE = "DataBaseSMSGPS3";
     final public static int version = 1;
     final public static String NAME_TABLE_HISTORY = "TableHistory";
+    final public static String NAME_TABLE_WHITE_LIST = "TableWhiteList";
     Context mContext;
 
     public DBHelper(Context context) {
@@ -34,6 +35,12 @@ public class DBHelper extends SQLiteOpenHelper {
                 + "accuracy text"
                 + ");");
         Log.d(TAG, "Создана база данных");
+        db.execSQL("create table " + NAME_TABLE_WHITE_LIST + " ("
+                + "id integer primary key autoincrement,"
+                + "id_number integer"
+                + ");");
+        Log.d(TAG, "Создана база данных");
+
     }
 
     @Override

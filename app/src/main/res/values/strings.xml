@@ -8,5 +8,6 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="text_for_auto_complete">Введите имя или номер</string>
+    <string name="text_menu_white_list">Белый список</string>
 
 </resources>

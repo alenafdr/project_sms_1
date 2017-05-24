@@ -156,6 +156,46 @@ public class DBHelperProvider {
         return  itemHistory;
     }
 
+    public void addIdWhiteList(int id) {
+        DBHelper dbHelper = new DBHelper(mContext);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put("id_number", id);
+        db.insertOrThrow(DBHelper.NAME_TABLE_WHITE_LIST, null, cv);
+    }
+
+    public List<String> getWhiteList(){
+        List<String> listId = new ArrayList<>();
+        DBHelper dbHelper = new DBHelper(mContext);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        String orderBy = "id";
+        String [] columns = new String[] {"id_number"};
+        Cursor c = db.query(DBHelper.NAME_TABLE_WHITE_LIST, columns, null, null, null, null, orderBy + " DESC");
+        if (c.moveToFirst()) {
+            int idNumberColIndex = c.getColumnIndex("id_number");
+            do {
+                String id_number = String.valueOf(c.getInt(idNumberColIndex));
+                listId.add(id_number);
+            } while (c.moveToNext());
+        }
+        db.close();
+
+        return listId;
+    }
+
+    public void removeNumberFromList(String id){
+        DBHelper dbHelper = new DBHelper(mContext);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        int clearCount = db.delete(DBHelper.NAME_TABLE_WHITE_LIST, "id_number = ?", new String[] { id });
+    }
+    public void clearWhiteList(){
+        DBHelper dbHelper = new DBHelper(mContext);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        int clearCount = db.delete(DBHelper.NAME_TABLE_WHITE_LIST, null, null);
+        Log.d(TAG, "deleted rows count = " + clearCount);
+    }
+
     public void clearHistory(){
         DBHelper dbHelper = new DBHelper(mContext);
         SQLiteDatabase db = dbHelper.getWritableDatabase();

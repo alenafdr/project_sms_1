@@ -30,5 +30,10 @@
             android:icon="@drawable/ic_menu_settings"
             android:tint="@color/grey"
             android:title="@string/text_menu_settings" />
+        <item
+            android:id="@+id/menu_white_list"
+            android:icon="@drawable/ic_menu_white_list"
+            android:tint="@color/grey"
+            android:title="@string/text_menu_white_list"/>
     </group>
 </menu>

@@ -20,12 +20,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.example.alena.sms_gps_30.help_classes.Contact;
-import com.example.alena.sms_gps_30.help_classes.ContactsAdapter;
+import com.example.alena.sms_gps_30.help_classes.ContactsAdapterAutoComplete;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -57,6 +56,7 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
 
     FragmentHistory mFragmentHistory;
     FragmentSettings mFragmentSettings;
+    FragmentWhiteList mFragmentWhiteList;
     NavigationView navigationView;
     ActionBarDrawerToggle toggle;
 
@@ -81,6 +81,7 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
         navigationView.setNavigationItemSelectedListener(this);
 
         navigationView.setCheckedItem(R.id.menu_map);
+        menuItemId = R.id.menu_map;
 
         toggle = new ActionBarDrawerToggle(
                 this, mDrawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -98,7 +99,7 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
         initMap();
         mFragmentHistory = new FragmentHistory();
         mFragmentSettings = new FragmentSettings();
-
+        mFragmentWhiteList = new FragmentWhiteList();
     }
 
     @Override
@@ -117,6 +118,7 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
             ft.setCustomAnimations(0, R.animator.fragment_exit);
             ft.remove(mFragmentHistory);
             ft.remove(mFragmentSettings);
+            ft.remove(mFragmentWhiteList);
             ft.commit();
             menuItemId = R.id.menu_map;
         }
@@ -134,7 +136,13 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
             ft.replace(R.id.container, mFragmentSettings);
             ft.commit();
             menuItemId = R.id.menu_settings;
-          /*  (findViewById(R.id.container)).setBackgroundColor(getResources().getColor(R.color.white));*/
+        }
+
+        if (id == R.id.menu_white_list) {
+            ft.setCustomAnimations(R.animator.fragment_enter, 0);
+            ft.replace(R.id.container, mFragmentWhiteList);
+            ft.commit();
+            menuItemId = R.id.menu_white_list;
         }
 
         mDrawerLayout.closeDrawer(GravityCompat.START);
@@ -181,11 +189,12 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
             ft.setCustomAnimations(0, R.animator.fragment_exit);
             ft.remove(mFragmentHistory);
             ft.remove(mFragmentSettings);
+            ft.remove(mFragmentWhiteList);
             ft.commit();
             menuItemId = R.id.menu_map;
             navigationView.setCheckedItem(R.id.menu_map);
         } else {
-            super.onBackPressed();
+            finish();
         }
     }
 
@@ -232,14 +241,14 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
                     });
                     alertDialog.show();
                 } else {
-                    Toast.makeText(getApplicationContext(), "Введите корректное имя или номер абонента", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Введите корректное имя или номер абонента(номер должен быть выбран из выпадающего списка)", Toast.LENGTH_LONG).show();
                 }
             }
         });
     }
 
     private void initAutoCompleteTextView() {
-        mAutoCompleteTextView.setAdapter(new ContactsAdapter(getApplicationContext()));
+        mAutoCompleteTextView.setAdapter(new ContactsAdapterAutoComplete(getApplicationContext()));
 
         /*if (!loadName().equals("")){
             mAutoCompleteTextView.setText(loadName());
