@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+
+    >
+
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="notifications_new_message"
+        android:title="Белый список"
+        android:summary="Отправлять метоположение только абонентам, номера которых есть в белом списке"/>
+
+</PreferenceScreen>
