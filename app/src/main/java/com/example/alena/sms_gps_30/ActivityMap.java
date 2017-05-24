@@ -1,7 +1,6 @@
 package com.example.alena.sms_gps_30;
 
 import android.app.AlertDialog;
-import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -17,17 +16,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.example.alena.sms_gps_30.help_classes.Contact;
 import com.example.alena.sms_gps_30.help_classes.ContactsAdapter;
-import com.example.alena.sms_gps_30.help_classes.FragmentSettings;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -121,7 +119,6 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
             ft.remove(mFragmentSettings);
             ft.commit();
             menuItemId = R.id.menu_map;
-            /*((View)findViewById(R.id.container)).setVisibility(View.INVISIBLE);*/
         }
 
         if (id == R.id.menu_history){
@@ -129,27 +126,18 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
             ft.setCustomAnimations(R.animator.fragment_enter, 0);
             ft.replace(R.id.container, mFragmentHistory);
             ft.commit();
-            /*getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setHomeButtonEnabled(true);*/
             menuItemId = R.id.menu_history;
         }
 
         if (id == R.id.menu_settings) {
+            ft.setCustomAnimations(R.animator.fragment_enter, 0);
             ft.replace(R.id.container, mFragmentSettings);
             ft.commit();
-            /*getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setHomeButtonEnabled(true);*/
             menuItemId = R.id.menu_settings;
+          /*  (findViewById(R.id.container)).setBackgroundColor(getResources().getColor(R.color.white));*/
         }
 
         mDrawerLayout.closeDrawer(GravityCompat.START);
-        return true;
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
@@ -180,46 +168,26 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
         mSettingsMap.setAllGesturesEnabled(true);
         mSettingsMap.setMapToolbarEnabled(true);
 
-       /* mSettingsMap.setZoomControlsEnabled(true);
-        mSettingsMap.setCompassEnabled(true);
-        mSettingsMap.setMyLocationButtonEnabled(true);
-        mSettingsMap.setIndoorLevelPickerEnabled(true);
-        mSettingsMap.setScrollGesturesEnabled(true);
-        mSettingsMap.setZoomGesturesEnabled(true);
-        mSettingsMap.setTiltGesturesEnabled(true);
-        mSettingsMap.setRotateGesturesEnabled(true);
-        mSettingsMap.setAllGesturesEnabled(true);
-        mSettingsMap.setMapToolbarEnabled(true);
-*/
         showLastLocation();
 
         googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
     }
 
     public void onBackPressed() {
-        FragmentManager fm = getFragmentManager();
-        /*if (fm.getBackStackEntryCount() > 0)
-            fm.popBackStack();
-        else
-            finish();*/
         if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
             mDrawerLayout.closeDrawer(GravityCompat.START);
-        } else if (menuItemId != R.id.menu_map) {/*
-            navigationView.setCheckedItem(R.id.menu_map);
-*/
+        } else if (menuItemId != R.id.menu_map) {
             FragmentTransaction ft = getFragmentManager().beginTransaction();
             ft.setCustomAnimations(0, R.animator.fragment_exit);
             ft.remove(mFragmentHistory);
             ft.remove(mFragmentSettings);
             ft.commit();
             menuItemId = R.id.menu_map;
+            navigationView.setCheckedItem(R.id.menu_map);
         } else {
             super.onBackPressed();
         }
-
-
     }
-
 
     private void initMap() {
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.mapFragment);
@@ -289,15 +257,6 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
             }
         });
     }
-
-
-   /* @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }*/
-
 
     public void showLastLocation(){
         LatLng nullLatLng = new LatLng(0, 0);
@@ -373,16 +332,14 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
         float latitude = sPref.getFloat(LAST_LAT, 0);
         float longitude = sPref.getFloat(LAST_LNG, 0);
 
-        return new LatLng(latitude, longitude);/*
-        return new LatLng(54.99666, 73.35692);*/
+        return new LatLng(latitude, longitude);
     }
 
     private float loadAccuracy() {
         sPref = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
         float accuracy = sPref.getFloat(LAST_ACCURACY, 50);
 
-        return accuracy;/*
-        return new LatLng(54.99666, 73.35692);*/
+        return accuracy;
     }
 
     private String loadNumber(){
@@ -395,8 +352,7 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
         return sPref.getString(LAST_DATA, "");
     }
 
-    private void sendSMS(String phoneNumber)
-    {
+    private void sendSMS(String phoneNumber){
         String message = "&GET&";
         Intent smsSendIntentService = new Intent(getApplicationContext(), ServiceIntentSendSms.class);
         smsSendIntentService.putExtra("message", message);
