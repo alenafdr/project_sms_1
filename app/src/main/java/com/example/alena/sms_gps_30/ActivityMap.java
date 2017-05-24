@@ -181,6 +181,21 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
         googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
     }
 
+    @Override
+    public void someEvent(String s) {
+        String[] strings = s.split("#");
+        for (int i = 0; i < strings.length; i++) {
+            Log.d(TAG, String.valueOf(strings[i]));
+        }
+        saveName(strings[0]);
+        saveNumber(strings[1]);
+        saveData(strings[2]);
+        saveAccuracy(Float.valueOf(strings[3]));
+        saveLatitude(Float.valueOf(strings[4]));
+        saveLongitude(Float.valueOf(strings[5]));
+        showLastLocation();
+    }
+
     public void onBackPressed() {
         if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
             mDrawerLayout.closeDrawer(GravityCompat.START);
@@ -369,21 +384,5 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
         getApplicationContext().startService(smsSendIntentService);
     }
 
-    @Override
-    public void someEvent(String s) {
-        String[] strings = s.split("#");
-        for (int i = 0; i < strings.length; i++) {
-            Log.d(TAG, String.valueOf(strings[i]));
-        }
-        saveName(strings[0]);
-        saveNumber(strings[1]);
-        saveData(strings[2]);
-        saveAccuracy(Float.valueOf(strings[3]));
-        saveLatitude(Float.valueOf(strings[4]));
-        saveLongitude(Float.valueOf(strings[5]));
 
-        mAutoCompleteTextView.setText(strings[0]);
-
-        showLastLocation();
-    }
 }

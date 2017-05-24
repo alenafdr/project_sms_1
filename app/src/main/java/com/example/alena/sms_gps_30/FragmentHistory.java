@@ -5,6 +5,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.design.widget.BottomSheetBehavior;
 import android.transition.Slide;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,6 +13,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Adapter;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -19,6 +22,7 @@ import com.example.alena.sms_gps_30.help_classes.DBHelperProvider;
 import com.example.alena.sms_gps_30.help_classes.HistoryAdapter;
 import com.example.alena.sms_gps_30.help_classes.ItemHistory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -28,6 +32,7 @@ public class FragmentHistory extends Fragment {
     private final String TAG = ActivityMap.TAG + " FragmentHist";
     ListView listHistory;
     TextView textView;
+    LinearLayout llBottomSheet;
     onSomeEventListener someEventListener;
 
     public FragmentHistory() {
@@ -50,7 +55,7 @@ public class FragmentHistory extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_history, container, false);
         listHistory = (ListView)view.findViewById(R.id.listViewHistory);
-        textView =(TextView) view.findViewById(R.id.textViewHistoryEmpty);
+        llBottomSheet = (LinearLayout) view.findViewById(R.id.bottom_sheet);
         return view;
     }
 
@@ -67,6 +72,9 @@ public class FragmentHistory extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+
+        final BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from(llBottomSheet);
+
         DBHelperProvider dbHelperProvider = new DBHelperProvider(getActivity());
         List<ItemHistory> itemHistoryList = dbHelperProvider.getAllHistory();
 /*
@@ -75,9 +83,11 @@ public class FragmentHistory extends Fragment {
         HistoryAdapter historyAdapter = new HistoryAdapter(getActivity(), itemHistoryList);
         listHistory.setAdapter(historyAdapter);
         if(itemHistoryList.size() == 0){
-            textView.setVisibility(View.VISIBLE);
+            ArrayList<String> myStringArray1 = new ArrayList<>();
+            myStringArray1.add("Нет данных");
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, myStringArray1);
+            listHistory.setAdapter(adapter);
         } else {
-            textView.setVisibility(View.INVISIBLE);
             listHistory.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -93,6 +103,8 @@ public class FragmentHistory extends Fragment {
                                                 accuracy + "#" +
                                                 latitude + "#" +
                                                 longitude);
+
+                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 }
             });
         }

@@ -3,10 +3,12 @@
     <color name="black">#000000</color>
     <color name="white">#ffffff</color>
     <color name="grey">#757575</color>
+    <color name="white_grey">#c1c1c1</color>
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="colorForControlActivated">#33a8ec</color>
     <color name="color_for_accuracy">#00ffffff</color>
     <color name="color_for_splash">#a6e9ff</color>
+    <color name="color_for_bottom_sheet_peek">#a6e9ff</color>
 </resources>
