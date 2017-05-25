@@ -1,0 +1,50 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.alena.sms_gps_30.FragmentSettings"
+    android:padding="16dp"
+    android:background="@color/white">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Белый список"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:id="@+id/textViewTitle" />
+
+            <TextView
+                android:id="@+id/textViewSummary"
+                android:layout_width="327dp"
+                android:layout_height="wrap_content"
+                android:text="Отправлять метоположение только абонентам, номера которых есть в белом списке"
+                android:layout_below="@+id/textViewTitle"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_toLeftOf="@+id/checkBox"
+                android:layout_toStartOf="@+id/checkBox" />
+
+        <CheckBox
+            android:id="@+id/checkBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginRight="11dp"
+            android:layout_marginEnd="11dp"
+            android:layout_alignTop="@+id/textViewSummary"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
+
+
+    <Button
+        android:id="@+id/buttonClearHistory"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:text="Очистить историю" />
+
+
+</RelativeLayout>

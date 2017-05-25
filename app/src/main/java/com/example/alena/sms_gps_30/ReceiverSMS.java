@@ -3,7 +3,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.telephony.SmsMessage;
 import android.util.Log;
 import android.widget.Toast;
@@ -49,8 +48,8 @@ public class ReceiverSMS extends BroadcastReceiver {
     }
 
     public boolean isWhiteListEnable(){
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mContext);
-        return sp.getBoolean("white_list", false);
+        SharedPreferences sPref = mContext.getSharedPreferences(ActivityMap.APP_PREFERENCES, Context.MODE_PRIVATE);
+        return sPref.getBoolean(FragmentSettings.CHECK_BOX_WHITE_LIST, false);
     }
 
     public boolean isNumberInWhiteList(String number) {

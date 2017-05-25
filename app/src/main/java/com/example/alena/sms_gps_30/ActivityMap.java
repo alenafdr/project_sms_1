@@ -1,6 +1,7 @@
 package com.example.alena.sms_gps_30;
 
 import android.app.AlertDialog;
+import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -43,7 +44,10 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
     private AutoCompleteTextView mAutoCompleteTextView;
     private GoogleMap mGoogleMap;
     private boolean isAutoCompleteTextView = false;
-    private int menuItemId;
+
+
+    public static int menuItemId;
+    public static boolean transitionSettingsWhiteList = false;
 
     public static final String TAG = "SMSGPS3.0";
     public static final String APP_PREFERENCES = "com.example.alena.sms_gps_30";
@@ -55,10 +59,11 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
     public static final String LAST_ACCURACY = "last accuracy";
 
     FragmentHistory mFragmentHistory;
-    FragmentSettings mFragmentSettings;
     FragmentWhiteList mFragmentWhiteList;
+    FragmentSettings mFragmentSettings;
     NavigationView navigationView;
     ActionBarDrawerToggle toggle;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,12 +72,12 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
         setContentView(R.layout.activity_main);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+        /*toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onBackPressed();
             }
-        });
+        });*/
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
@@ -98,8 +103,8 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
 
         initMap();
         mFragmentHistory = new FragmentHistory();
-        mFragmentSettings = new FragmentSettings();
         mFragmentWhiteList = new FragmentWhiteList();
+        mFragmentSettings = new FragmentSettings();
     }
 
     @Override
@@ -131,18 +136,18 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
             menuItemId = R.id.menu_history;
         }
 
-        if (id == R.id.menu_settings) {
-            ft.setCustomAnimations(R.animator.fragment_enter, 0);
-            ft.replace(R.id.container, mFragmentSettings);
-            ft.commit();
-            menuItemId = R.id.menu_settings;
-        }
-
         if (id == R.id.menu_white_list) {
             ft.setCustomAnimations(R.animator.fragment_enter, 0);
             ft.replace(R.id.container, mFragmentWhiteList);
             ft.commit();
             menuItemId = R.id.menu_white_list;
+        }
+
+        if (id == R.id.menu_settings) {
+            ft.setCustomAnimations(R.animator.fragment_enter, 0);
+            ft.replace(R.id.container, mFragmentSettings);
+            ft.commit();
+            menuItemId = R.id.menu_settings;
         }
 
         mDrawerLayout.closeDrawer(GravityCompat.START);
@@ -197,8 +202,18 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
     }
 
     public void onBackPressed() {
-        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+
+        if (transitionSettingsWhiteList) {
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            ft.setCustomAnimations(R.animator.fragment_enter, R.animator.fragment_exit);
+            ft.replace(R.id.container, mFragmentSettings);
+            ft.commit();
+            menuItemId = R.id.menu_settings;
+            transitionSettingsWhiteList = false;
+            Log.d(TAG, "1");
+        } else if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
             mDrawerLayout.closeDrawer(GravityCompat.START);
+            Log.d(TAG, "2");
         } else if (menuItemId != R.id.menu_map) {
             FragmentTransaction ft = getFragmentManager().beginTransaction();
             ft.setCustomAnimations(0, R.animator.fragment_exit);
@@ -208,8 +223,10 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
             ft.commit();
             menuItemId = R.id.menu_map;
             navigationView.setCheckedItem(R.id.menu_map);
+            Log.d(TAG, "3");
         } else {
             finish();
+            Log.d(TAG, "4");
         }
     }
 

@@ -1,6 +1,8 @@
 package com.example.alena.sms_gps_30;
 
 import android.app.AlertDialog;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
@@ -151,8 +153,6 @@ public class FragmentWhiteList extends Fragment {
 
         final DBHelperProvider dbHelperProvider = new DBHelperProvider(getActivity());
         List<String> idWhiteList = dbHelperProvider.getWhiteList();
-
-        Log.d(TAG, "idWhiteList " + idWhiteList.toString());
 
         if (idWhiteList.size() == 0) {
             ArrayList<String> myStringArray1 = new ArrayList<>();

@@ -1,17 +1,13 @@
 package com.example.alena.sms_gps_30;
 
 import android.app.Activity;
-import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.support.design.widget.BottomSheetBehavior;
-import android.transition.Slide;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
@@ -79,14 +75,16 @@ public class FragmentHistory extends Fragment {
         List<ItemHistory> itemHistoryList = dbHelperProvider.getAllHistory();
 /*
         Log.d(TAG, String.valueOf(itemHistoryList.size()));*/
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
 
         HistoryAdapter historyAdapter = new HistoryAdapter(getActivity(), itemHistoryList);
         listHistory.setAdapter(historyAdapter);
         if(itemHistoryList.size() == 0){
             ArrayList<String> myStringArray1 = new ArrayList<>();
             myStringArray1.add("Нет данных");
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, myStringArray1);
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), R.layout.item_1_list, myStringArray1);
             listHistory.setAdapter(adapter);
+
         } else {
             listHistory.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
@@ -103,8 +101,6 @@ public class FragmentHistory extends Fragment {
                                                 accuracy + "#" +
                                                 latitude + "#" +
                                                 longitude);
-
-                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 }
             });
         }

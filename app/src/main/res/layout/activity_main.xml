@@ -20,7 +20,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/mapFragment"
                 android:name="com.google.android.gms.maps.MapFragment"
-
+                android:layout_gravity="center"
                 />
 
 
@@ -58,12 +58,14 @@
                 app:srcCompat="@drawable/ic_find_me"
                 android:id="@+id/imageButtonFindMe"
                 android:background="@color/white"
-                android:layout_gravity="end|center_vertical"/>
+                android:layout_gravity="end|center_vertical"
+                android:layout_margin="8dp"/>
 
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:id="@+id/container">
+                android:id="@+id/container"
+                android:elevation="8dp">
 
             </FrameLayout>
 
