@@ -51,23 +51,15 @@ public class ServiceIntentSMS extends IntentService {
 
         if (messages[1].equals(command_show)) {
             //Расшифровать
-            String differenceTime = messages[2];
-            String provider = messages[3];
-            String accuracy = messages[4];
-            String latitude = messages[5];
-            String longitude = messages[6];
-
             //открыть окно с картой
             Intent intentActivityMaps = new Intent(getApplicationContext(), ActivityMap.class);
             saveMessageInHistory(sms_from, sms_body);
-            String name = getNameByNumber(sms_from);
-            saveInSharPref(name,
-                    sms_from,
-                    differenceTime,
-                    Float.valueOf(latitude),
-                    Float.valueOf(longitude),
-                    Float.valueOf(accuracy));
 
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             intentActivityMaps.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             getApplicationContext().startActivity(intentActivityMaps);
 
@@ -75,17 +67,7 @@ public class ServiceIntentSMS extends IntentService {
         }
     }
 
-    public void saveInSharPref(String name, String number, String data , float latitude, float longitude, float accuracy) {
-        SharedPreferences sPref = getSharedPreferences(ActivityMap.APP_PREFERENCES, Context.MODE_PRIVATE);
-        SharedPreferences.Editor ed = sPref.edit();
-        ed.putString(ActivityMap.LAST_NAME, name);
-        ed.putString(ActivityMap.LAST_NUMBER, number);
-        ed.putString(ActivityMap.LAST_DATA, data);
-        ed.putFloat(ActivityMap.LAST_LAT, latitude);
-        ed.putFloat(ActivityMap.LAST_LNG, longitude);
-        ed.putFloat(ActivityMap.LAST_ACCURACY, accuracy);
-        ed.apply();
-    }
+
 
     public void saveMessageInHistory(String phoneNumber, String message){
         SaveInHistoryTask historyTask = new SaveInHistoryTask(getApplicationContext(), ItemHistory.TYPE_RECEIVED, message, phoneNumber);

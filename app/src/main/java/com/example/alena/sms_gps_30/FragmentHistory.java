@@ -101,6 +101,7 @@ public class FragmentHistory extends Fragment {
                                                 accuracy + "#" +
                                                 latitude + "#" +
                                                 longitude);
+                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 }
             });
         }

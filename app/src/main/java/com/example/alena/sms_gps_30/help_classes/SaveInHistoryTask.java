@@ -3,6 +3,7 @@ package com.example.alena.sms_gps_30.help_classes;
 
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.location.Address;
 import android.location.Geocoder;
@@ -69,6 +70,13 @@ public class SaveInHistoryTask extends AsyncTask<Void, Void, Void> {
                 name,
                 phoneNumber,
                 type));
+
+        saveInSharPref(name,
+                phoneNumber,
+                accuracyTime,
+                Float.valueOf(latitude),
+                Float.valueOf(longitude),
+                Float.valueOf(accuracy));
         Log.d(TAG, type);
     }
 
@@ -101,6 +109,18 @@ public class SaveInHistoryTask extends AsyncTask<Void, Void, Void> {
         }
         phones.close();
         return name;
+    }
+
+    public void saveInSharPref(String name, String number, String data , float latitude, float longitude, float accuracy) {
+        SharedPreferences sPref = context.getSharedPreferences(ActivityMap.APP_PREFERENCES, Context.MODE_PRIVATE);
+        SharedPreferences.Editor ed = sPref.edit();
+        ed.putString(ActivityMap.LAST_NAME, name);
+        ed.putString(ActivityMap.LAST_NUMBER, number);
+        ed.putString(ActivityMap.LAST_DATA, data);
+        ed.putFloat(ActivityMap.LAST_LAT, latitude);
+        ed.putFloat(ActivityMap.LAST_LNG, longitude);
+        ed.putFloat(ActivityMap.LAST_ACCURACY, accuracy);
+        ed.apply();
     }
 
 
