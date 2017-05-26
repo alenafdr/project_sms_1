@@ -42,7 +42,6 @@ public class ServiceIntentSendSms extends IntentService {
         if (!message.equals("&GET&")) {
             SaveInHistoryTask historyTask = new SaveInHistoryTask(getApplicationContext(), ItemHistory.TYPE_SENT, message, phoneNumber);
             historyTask.execute();
-
         }
     }
 }

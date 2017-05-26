@@ -111,6 +111,13 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         showLastLocation();
+
+        if (mFragmentHistory.isVisible()) {
+            mFragmentHistory.updateTableHistory();
+        }
+        /*mFragmentHistory.removeTable();*/
+        /**/
+        Log.d(TAG, "onNewIntent");
     }
 
     @Override
@@ -157,9 +164,6 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-
-        Log.d(TAG, "158 id " + id);
-
         if (id == R.id.action_settings) {
             return true;
         } else if (id == android.R.id.home) {
@@ -189,9 +193,9 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
     @Override
     public void someEvent(String s) {
         String[] strings = s.split("#");
-        for (int i = 0; i < strings.length; i++) {
+        /*for (int i = 0; i < strings.length; i++) {
             Log.d(TAG, String.valueOf(strings[i]));
-        }
+        }*/
         saveName(strings[0]);
         saveNumber(strings[1]);
         saveData(strings[2]);
@@ -210,10 +214,8 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
             ft.commit();
             menuItemId = R.id.menu_settings;
             transitionSettingsWhiteList = false;
-            Log.d(TAG, "1");
         } else if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
             mDrawerLayout.closeDrawer(GravityCompat.START);
-            Log.d(TAG, "2");
         } else if (menuItemId != R.id.menu_map) {
             FragmentTransaction ft = getFragmentManager().beginTransaction();
             ft.setCustomAnimations(0, R.animator.fragment_exit);
@@ -223,10 +225,8 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
             ft.commit();
             menuItemId = R.id.menu_map;
             navigationView.setCheckedItem(R.id.menu_map);
-            Log.d(TAG, "3");
         } else {
             finish();
-            Log.d(TAG, "4");
         }
     }
 
@@ -400,6 +400,4 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
         smsSendIntentService.putExtra("phoneNumber", phoneNumber);
         getApplicationContext().startService(smsSendIntentService);
     }
-
-
 }

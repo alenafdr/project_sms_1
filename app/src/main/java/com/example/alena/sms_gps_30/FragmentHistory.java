@@ -30,6 +30,8 @@ public class FragmentHistory extends Fragment {
     TextView textView;
     LinearLayout llBottomSheet;
     onSomeEventListener someEventListener;
+    ArrayAdapter<String> adapter;
+    HistoryAdapter historyAdapter;
 
     public FragmentHistory() {
         // Required empty public constructor
@@ -69,23 +71,32 @@ public class FragmentHistory extends Fragment {
     public void onStart() {
         super.onStart();
 
-        final BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from(llBottomSheet);
+        BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from(llBottomSheet);
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        updateTableHistory();
+    }
 
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
+    public void updateTableHistory(){
         DBHelperProvider dbHelperProvider = new DBHelperProvider(getActivity());
         List<ItemHistory> itemHistoryList = dbHelperProvider.getAllHistory();
-/*
-        Log.d(TAG, String.valueOf(itemHistoryList.size()));*/
-        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
 
-        HistoryAdapter historyAdapter = new HistoryAdapter(getActivity(), itemHistoryList);
-        listHistory.setAdapter(historyAdapter);
+
+
         if(itemHistoryList.size() == 0){
             ArrayList<String> myStringArray1 = new ArrayList<>();
             myStringArray1.add("Нет данных");
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), R.layout.item_1_list, myStringArray1);
+            adapter = new ArrayAdapter<>(getActivity(), R.layout.item_1_list, myStringArray1);
             listHistory.setAdapter(adapter);
 
         } else {
+            historyAdapter = new HistoryAdapter(getActivity(), itemHistoryList);
+            listHistory.setAdapter(historyAdapter);
             listHistory.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -96,21 +107,29 @@ public class FragmentHistory extends Fragment {
                     String latitude = ((TextView)view.findViewById(R.id.textViewItemHistoryLat)).getText().toString();
                     String longitude = ((TextView)view.findViewById(R.id.textViewItemHistoryLon)).getText().toString();
                     someEventListener.someEvent(name + "#" +
-                                                number + "#" +
-                                                data + "#" +
-                                                accuracy + "#" +
-                                                latitude + "#" +
-                                                longitude);
+                            number + "#" +
+                            data + "#" +
+                            accuracy + "#" +
+                            latitude + "#" +
+                            longitude);
+
+                    BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from(llBottomSheet);
                     bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 }
             });
         }
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
+
+    public void removeTable(){
+       /* if (adapter != null) {
+            adapter.clear();
+        } else if (historyAdapter != null) {
+
+        }*/
+
+        listHistory.removeAllViews();
+
     }
 
     public interface OnFragmentInteractionListener {

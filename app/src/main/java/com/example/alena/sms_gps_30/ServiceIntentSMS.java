@@ -18,7 +18,7 @@ public class ServiceIntentSMS extends IntentService {
 
     final String command_get = "GET";
     final String command_show = "SHOW";
-    private static final String TAG = ActivityMap.TAG;
+    private static final String TAG = ActivityMap.TAG + " serviceSMS";
     String sms_body;
     String sms_from;
 
@@ -41,25 +41,39 @@ public class ServiceIntentSMS extends IntentService {
         sms_from = intent.getExtras().getString("sms_from");
         String[] messages = sms_body.split("&");
 
+        Log.d(TAG, "стартовал ServiceIntentSMS");
+
         if (messages[1].equals(command_get)) {
             //запустить сервис с запросом GPS
-            Intent intentServiceGPS = new Intent(getApplicationContext(), ServiceGPS.class);
-            intentServiceGPS.putExtra("phoneNumber", sms_from);
-            getApplicationContext().startService(intentServiceGPS);
-            Log.d(TAG, "стартовал сервис");
+
+
+            if (!isWhiteListEnable() || isNumberInWhiteList(sms_from)){
+                Intent intentServiceGPS = new Intent(getApplicationContext(), ServiceGPS.class);
+                intentServiceGPS.putExtra("phoneNumber", sms_from);
+                getApplicationContext().startService(intentServiceGPS);
+                Log.d(TAG, "стартовал сервис");
+
+
+            }
+
         }
 
         if (messages[1].equals(command_show)) {
             //Расшифровать
             //открыть окно с картой
-            Intent intentActivityMaps = new Intent(getApplicationContext(), ActivityMap.class);
+            Log.d(TAG, command_show);
             saveMessageInHistory(sms_from, sms_body);
 
             try {
-                Thread.sleep(500);
+                Log.d(TAG, "засыпает");
+                Thread.sleep(1000);
+                Log.d(TAG, "проснулся");
             } catch (InterruptedException e) {
+                Log.d(TAG, e.toString());
                 e.printStackTrace();
             }
+
+            Intent intentActivityMaps = new Intent(getApplicationContext(), ActivityMap.class);
             intentActivityMaps.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             getApplicationContext().startActivity(intentActivityMaps);
 
@@ -70,8 +84,27 @@ public class ServiceIntentSMS extends IntentService {
 
 
     public void saveMessageInHistory(String phoneNumber, String message){
+        Log.d(TAG, "сохраняет в истории");
         SaveInHistoryTask historyTask = new SaveInHistoryTask(getApplicationContext(), ItemHistory.TYPE_RECEIVED, message, phoneNumber);
         historyTask.execute();
+    }
+
+    public boolean isWhiteListEnable(){
+        SharedPreferences sPref = getApplicationContext().getSharedPreferences(ActivityMap.APP_PREFERENCES, Context.MODE_PRIVATE);
+        return sPref.getBoolean(FragmentSettings.CHECK_BOX_WHITE_LIST, false);
+    }
+
+    public boolean isNumberInWhiteList(String number) {
+        String numberForSearch;
+        if(number.contains("+")){
+            numberForSearch = number.substring(2);
+        } else {
+            numberForSearch = number.substring(1);
+        }
+
+        SharedPreferences sPref = getApplication().getSharedPreferences(ActivityMap.APP_PREFERENCES, Context.MODE_PRIVATE);
+        String whiteList = sPref.getString(FragmentWhiteList.WHITE_NUMBERS, "");
+        return whiteList.contains(numberForSearch);
     }
 
     public String getNameByNumber(String number){

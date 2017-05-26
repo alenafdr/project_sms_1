@@ -29,7 +29,7 @@ import javax.net.ssl.HttpsURLConnection;
 
 public class SaveInHistoryTask extends AsyncTask<Void, Void, Void> {
 
-    private static final String TAG = ActivityMap.TAG;
+    private static final String TAG = ActivityMap.TAG + " task";
     private final String KEY = "AIzaSyBkQaKiuWQDSsrZE67xKXr5t5HMqpxNJ84";
 
     private String type, number, message;
@@ -40,7 +40,6 @@ public class SaveInHistoryTask extends AsyncTask<Void, Void, Void> {
         this.message = message;
         this.number = number;
         this.context = context;
-        Log.d(TAG, "type = " + type);
     }
 
     @Override
@@ -77,7 +76,6 @@ public class SaveInHistoryTask extends AsyncTask<Void, Void, Void> {
                 Float.valueOf(latitude),
                 Float.valueOf(longitude),
                 Float.valueOf(accuracy));
-        Log.d(TAG, type);
     }
 
     public String getNameByNumber(String number){
@@ -121,6 +119,7 @@ public class SaveInHistoryTask extends AsyncTask<Void, Void, Void> {
         ed.putFloat(ActivityMap.LAST_LNG, longitude);
         ed.putFloat(ActivityMap.LAST_ACCURACY, accuracy);
         ed.apply();
+        Log.d(TAG, "сохранил в Preferences");
     }
 
 
@@ -144,7 +143,6 @@ public class SaveInHistoryTask extends AsyncTask<Void, Void, Void> {
             List<Address> addresses = geoCoder.getFromLocation(Double.valueOf(lat), Double.valueOf(lng), 1);
             Address address = addresses.get(0);
             addressString = address.getLocality() + ", " + address.getThoroughfare() + ", " + address.getFeatureName();
-            Log.d(TAG, addressString);
         }
         catch (IOException e) {
             e.printStackTrace();
