@@ -4,7 +4,9 @@ import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -71,8 +73,29 @@ public class FragmentHistory extends Fragment {
     public void onStart() {
         super.onStart();
 
-        BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from(llBottomSheet);
+        final BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from(llBottomSheet);
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+
+        bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+
+            boolean canCollapse;
+
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+
+                canCollapse = listHistory.getFirstVisiblePosition () == 0;
+
+                if (newState == BottomSheetBehavior.STATE_DRAGGING && !canCollapse) {
+                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+            }
+        });
+
+
         updateTableHistory();
     }
 
@@ -85,8 +108,6 @@ public class FragmentHistory extends Fragment {
     public void updateTableHistory(){
         DBHelperProvider dbHelperProvider = new DBHelperProvider(getActivity());
         List<ItemHistory> itemHistoryList = dbHelperProvider.getAllHistory();
-
-
 
         if(itemHistoryList.size() == 0){
             ArrayList<String> myStringArray1 = new ArrayList<>();
@@ -118,18 +139,6 @@ public class FragmentHistory extends Fragment {
                 }
             });
         }
-    }
-
-
-    public void removeTable(){
-       /* if (adapter != null) {
-            adapter.clear();
-        } else if (historyAdapter != null) {
-
-        }*/
-
-        listHistory.removeAllViews();
-
     }
 
     public interface OnFragmentInteractionListener {
