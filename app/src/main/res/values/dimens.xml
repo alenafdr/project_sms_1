@@ -2,10 +2,11 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">0dp</dimen>
     <dimen name="activity_vertical_margin">0dp</dimen>
-    <dimen name="toolbar_margin">8dp</dimen>
+    <dimen name="margin_toolbar">8dp</dimen>
     <dimen name="toolbar_elevation">4dp</dimen>
     <dimen name="md_keylines">16dp</dimen>
     <dimen name="navheader_height">222dp</dimen>
     <dimen name="dimen_text_name">20sp</dimen>
     <dimen name="dimen_text_number">16sp</dimen>
+    <dimen name="margin_image_button_find_me">8dp</dimen>
 </resources>

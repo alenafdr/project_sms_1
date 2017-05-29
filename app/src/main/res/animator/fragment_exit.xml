@@ -4,7 +4,7 @@
         android:interpolator="@android:anim/accelerate_decelerate_interpolator"
         android:propertyName="y"
         android:valueType="floatType"
-        android:valueTo="1280"
+        android:valueTo="1700"
         android:valueFrom="0"
         android:duration="800"
         />

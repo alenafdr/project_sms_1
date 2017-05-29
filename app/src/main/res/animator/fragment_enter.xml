@@ -5,7 +5,7 @@
         android:propertyName="y"
         android:valueType="floatType"
         android:valueTo="0"
-        android:valueFrom="1280"
+        android:valueFrom="1700"
         android:duration="500"
         />
 
