@@ -102,12 +102,15 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
         initImageButton(imageButtonFindMeGet);
 
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        initProgressBar();
 
         initMap();
         mFragmentHistory = new FragmentHistory();
         mFragmentWhiteList = new FragmentWhiteList();
         mFragmentSettings = new FragmentSettings();
     }
+
+
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -307,6 +310,16 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
                 saveNumber(contact.getNumber());
                 isAutoCompleteTextView = true;
                 /*showLastLocation(contact.getNumber());*/
+            }
+        });
+    }
+
+    private void initProgressBar() {
+        progressBar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                imageButtonGet.setVisibility(ImageButton.VISIBLE);
+                progressBar.setVisibility(ProgressBar.INVISIBLE);
             }
         });
     }

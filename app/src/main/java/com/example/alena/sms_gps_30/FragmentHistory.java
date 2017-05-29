@@ -29,7 +29,7 @@ public class FragmentHistory extends Fragment {
     private OnFragmentInteractionListener mListener;
     private final String TAG = ActivityMap.TAG + " FragmentHist";
     ListView listHistory;
-    TextView textView;
+    TextView textViewHeader;
     LinearLayout llBottomSheet;
     onSomeEventListener someEventListener;
     ArrayAdapter<String> adapter;
@@ -56,6 +56,7 @@ public class FragmentHistory extends Fragment {
         View view = inflater.inflate(R.layout.fragment_history, container, false);
         listHistory = (ListView)view.findViewById(R.id.listViewHistory);
         llBottomSheet = (LinearLayout) view.findViewById(R.id.bottom_sheet);
+        textViewHeader = (TextView) view.findViewById(R.id.textViewHeaderBottomSheet);
         return view;
     }
 
@@ -82,9 +83,7 @@ public class FragmentHistory extends Fragment {
 
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
-
                 canCollapse = listHistory.getFirstVisiblePosition () == 0;
-
                 if (newState == BottomSheetBehavior.STATE_DRAGGING && !canCollapse) {
                     bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                 }
@@ -95,7 +94,14 @@ public class FragmentHistory extends Fragment {
             }
         });
 
-
+        textViewHeader.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                }
+            }
+        });
         updateTableHistory();
     }
 

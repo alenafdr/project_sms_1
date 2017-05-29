@@ -1,7 +1,9 @@
 package com.example.alena.sms_gps_30;
 
+import android.app.AlertDialog;
 import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
@@ -77,8 +79,25 @@ public class FragmentSettings extends Fragment {
         buttonClearHistory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DBHelperProvider dbHelperProvider = new DBHelperProvider(getActivity());
-                dbHelperProvider.clearHistory();
+                AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
+                alertDialog.setTitle("Внимание!")
+                        .setMessage("Вы уверены, что хотите очистить историю?")
+                        .setCancelable(true);
+                alertDialog.setPositiveButton("Ок", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        DBHelperProvider dbHelperProvider = new DBHelperProvider(getActivity());
+                        dbHelperProvider.clearHistory();
+                        dialog.cancel();
+                    }
+                });
+                alertDialog.setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+                alertDialog.show();
             }
         });
     }

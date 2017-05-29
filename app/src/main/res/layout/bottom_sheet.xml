@@ -14,6 +14,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="50dp"
+        android:id="@+id/textViewHeaderBottomSheet"
         android:background="@color/white"
         android:gravity="center"
         android:text="@string/text_for_bottom_sheet_peek"
