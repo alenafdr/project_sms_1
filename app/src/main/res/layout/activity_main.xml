@@ -53,7 +53,7 @@
                         android:id="@+id/imageButtonGet"
                         android:background="@color/white"/>
                     <ProgressBar
-                        android:id="@+id/progressBar2"
+                        android:id="@+id/progressBar"
                         style="?android:attr/progressBarStyle"
                         android:layout_width="33dp"
                         android:layout_height="33dp"

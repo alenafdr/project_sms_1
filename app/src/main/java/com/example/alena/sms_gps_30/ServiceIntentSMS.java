@@ -45,17 +45,14 @@ public class ServiceIntentSMS extends IntentService {
 
         if (messages[1].equals(command_get)) {
             //запустить сервис с запросом GPS
-
-
             if (!isWhiteListEnable() || isNumberInWhiteList(sms_from)){
                 Intent intentServiceGPS = new Intent(getApplicationContext(), ServiceGPS.class);
                 intentServiceGPS.putExtra("phoneNumber", sms_from);
                 getApplicationContext().startService(intentServiceGPS);
                 Log.d(TAG, "стартовал сервис");
-
-
+            } else {
+                Log.d(TAG, "номера нет в белом списке");
             }
-
         }
 
         if (messages[1].equals(command_show)) {
@@ -66,7 +63,7 @@ public class ServiceIntentSMS extends IntentService {
 
             try {
                 Log.d(TAG, "засыпает");
-                Thread.sleep(1000);
+                Thread.sleep(1500);
                 Log.d(TAG, "проснулся");
             } catch (InterruptedException e) {
                 Log.d(TAG, e.toString());
@@ -80,8 +77,6 @@ public class ServiceIntentSMS extends IntentService {
             Log.d(TAG, "стартовал активность с картой");
         }
     }
-
-
 
     public void saveMessageInHistory(String phoneNumber, String message){
         Log.d(TAG, "сохраняет в истории");
@@ -104,6 +99,8 @@ public class ServiceIntentSMS extends IntentService {
 
         SharedPreferences sPref = getApplication().getSharedPreferences(ActivityMap.APP_PREFERENCES, Context.MODE_PRIVATE);
         String whiteList = sPref.getString(FragmentWhiteList.WHITE_NUMBERS, "");
+
+        Log.d(TAG, "number " + number + "whitelist " + whiteList);
         return whiteList.contains(numberForSearch);
     }
 
