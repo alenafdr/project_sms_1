@@ -37,10 +37,11 @@
 
                 <AutoCompleteTextView
                     android:id="@+id/auto_complete_text_view"
-                    android:layout_width="236dp"
+                    android:layout_width="@dimen/auto_complete_width"
                     android:layout_height="match_parent"
                     android:layout_weight="0.83"
-                    android:hint="@string/text_for_auto_complete" />
+                    android:hint="@string/text_for_auto_complete"
+                    android:textSize="@dimen/auto_complete_text_size"/>
 
                 <FrameLayout
                     android:layout_width="wrap_content"
@@ -71,7 +72,8 @@
                 android:id="@+id/imageButtonFindMe"
                 android:background="@color/white"
                 android:layout_gravity="end|center_vertical"
-                android:layout_margin="@dimen/margin_image_button_find_me"/>
+                android:layout_margin="@dimen/margin_image_button_find_me"
+                android:elevation="2dp"/>
 
             <FrameLayout
                 android:layout_width="match_parent"

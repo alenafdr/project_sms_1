@@ -1,30 +1,37 @@
 package com.example.alena.sms_gps_30;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.util.Log;
 import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
 public class ServiceGPS extends Service {
-    private static String SERVICE_ACTION = "com.example.alena.smsgps.ServiceGPS";
-    final String TAG = "SMS_GPS_2";
-    final int maxTimeWaitAnswer = 120; //Максимальное время ожидания координат
-    MyLocationListener myLocationListener;
-    String phoneNumber;
-    String message;
 
-    boolean sentGPS; //Флаг "Координаты отправлены"
+    public static boolean sentGPS; //Флаг "Координаты отправлены"
+    private final String TAG = ActivityMap.TAG + " GPS";
 
+    public static MyLocationListener myLocationListener;
+    private String phoneNumber;
+
+
+
+    private double timeStart; //Для отслеживания времени работы сервиса
+    private static final String NAME = ServiceGPS.class.getName() + ".Lock";
 
     public ServiceGPS() {
     }
@@ -37,25 +44,40 @@ public class ServiceGPS extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        myLocationListener = new MyLocationListener();
-        Log.d(TAG, "!!!!!!!служба GPS запущена " + Thread.currentThread().getName());
-
-        sentGPS = false;
-        timerThread timer = new timerThread(myLocationListener);
         Log.d(TAG, "служба GPS создана");
+        sentGPS = false;
+        AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
+        Intent broadcastIntent = new Intent(getApplicationContext(), AlarmReceiver.class);
+        PendingIntent piAlarm = PendingIntent.getBroadcast(this, 0, broadcastIntent, PendingIntent.FLAG_ONE_SHOT);
+
+        long timeForAlarm = System.currentTimeMillis() + 60 * 1000;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+        {
+            final AlarmManager.AlarmClockInfo alarmClockInfo = new AlarmManager.AlarmClockInfo(timeForAlarm, piAlarm);
+            am.setAlarmClock(alarmClockInfo, piAlarm);
+        }
+        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+            am.setExact(AlarmManager.RTC_WAKEUP,timeForAlarm, piAlarm);
+        else
+            am.set(AlarmManager.RTC_WAKEUP, timeForAlarm, piAlarm);
+
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+
+        myLocationListener = new MyLocationListener();
+        phoneNumber = intent.getStringExtra("phoneNumber");
+        timeStart = System.currentTimeMillis();
+        return Service.START_STICKY ;
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         myLocationListener = null;
-        Log.d(TAG, "!!!!!!!служба GPS уничтожена " + Thread.currentThread().getName());
-    }
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        phoneNumber = intent.getStringExtra("phoneNumber");
-        return Service.START_STICKY ;
+        Log.d(TAG, "!!!!!!!служба GPS уничтожена ");
     }
 
     public class MyLocationListener implements LocationListener {
@@ -91,6 +113,7 @@ public class ServiceGPS extends Service {
             listenerRegistration(LocationManager.NETWORK_PROVIDER);
 
         }
+
         public void listenerRegistration(String provider) {
             try {
                 locationManager.requestLocationUpdates(provider, 0, 0, this);
@@ -119,7 +142,6 @@ public class ServiceGPS extends Service {
                     Log.d(TAG, "stopUsingGPS" + e.toString());
                 }
             }
-
         }
 
         public synchronized void selectLocation(){
@@ -156,8 +178,6 @@ public class ServiceGPS extends Service {
             stopUsingGPS();
         }
 
-
-
         @Override
         public void onLocationChanged(Location location) {
             if (location.getProvider().equals(LocationManager.GPS_PROVIDER)) {
@@ -174,7 +194,6 @@ public class ServiceGPS extends Service {
 
         @Override
         public void onStatusChanged(String provider, int status, Bundle extras) {
-
         }
 
         @Override
@@ -183,23 +202,18 @@ public class ServiceGPS extends Service {
 
         @Override
         public void onProviderDisabled(String provider) {
-
         }
     }
 
-    public synchronized void sendGPS(Location location, int provider) {
+    private synchronized void sendGPS(Location location, int provider) {
+
+        String message;
 
         if (location != null) {
-            //**************УДАЛИТЬ************
-           /* Calendar currentTime = Calendar.getInstance();
-            Date dateLocation = new Date(location.getTime());*/
-            SimpleDateFormat sdf = new SimpleDateFormat("ddMMM, HH:mm", Locale.US);
+            SimpleDateFormat sdf = new SimpleDateFormat("dd MMM, HH:mm", Locale.US);
             String time = sdf.format(new Date(location.getTime()));
-
-           /* String time = currentTime.get*/
             float latitude =(float) location.getLatitude();
             float longitude = (float) location.getLongitude();
-            //**************УДАЛИТЬ************
             message = "&SHOW"
                     + "&" + time
                     + "&" + provider
@@ -214,36 +228,15 @@ public class ServiceGPS extends Service {
             smsSendIntentService.putExtra("phoneNumber", phoneNumber);
             getApplicationContext().startService(smsSendIntentService);
             Log.d(TAG, "!!!!!!!!!!!stopSelf " + Thread.currentThread().getName());
-
+        } else {
+            int timeForAnswer =(int) (System.currentTimeMillis() - timeStart) / 1000;
+            LocationManager locationManager =(LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            message = "location is null, GPS " + locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) + " " + timeForAnswer;
+            Intent smsSendIntentService = new Intent(getApplicationContext(), ServiceIntentSendSms.class);
+            smsSendIntentService.putExtra("message", message);
+            smsSendIntentService.putExtra("phoneNumber", phoneNumber);
+            getApplicationContext().startService(smsSendIntentService);
         }
         stopSelf();
     }
-
-    class timerThread implements Runnable {
-        Thread t;
-        MyLocationListener LocationListener;
-        timerThread(MyLocationListener myLocationListener) {
-            t = new Thread(this, "Поток таймера");
-            Log.d(TAG, "Поток таймера создан");
-            LocationListener = myLocationListener;
-            t.start();
-        }
-        @Override
-        public void run() {
-            int count = 0;
-            do {
-                try {
-                    Thread.sleep(1000);
-                    count++;
-                    Log.d(TAG, "таймер " + count + "sentGPS " + sentGPS);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            } while ((count < maxTimeWaitAnswer) && (!sentGPS));
-            if (!sentGPS) {
-                LocationListener.selectLocation();
-            }
-        }
-    }
-
 }

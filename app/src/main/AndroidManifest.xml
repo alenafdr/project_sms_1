@@ -12,7 +12,7 @@
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:allowBackup="true"
@@ -22,9 +22,8 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".ActivityMap"
-            android:theme="@style/splashScreenTheme"
-            android:launchMode="singleTask" >
-
+            android:launchMode="singleTask"
+            android:theme="@style/splashScreenTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -44,9 +43,10 @@
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="AIzaSyBA_T0W9qGCXKwgcZ_0e8CESc0Hgr7yAZA" />
+
         <service
             android:name=".ServiceIntentSendSms"
-            android:exported="false"/>
+            android:exported="false" />
         <service
             android:name=".ServiceGPS"
             android:enabled="true"
@@ -54,6 +54,15 @@
         <service
             android:name=".ServiceIntentSMS"
             android:exported="false" />
+
+        <receiver
+            android:name=".ReceiverGPS"
+            android:enabled="true"
+            android:exported="true" />
+        <receiver
+            android:name=".AlarmReceiver"
+            android:enabled="true"
+            android:exported="true"></receiver>
     </application>
 
 </manifest>

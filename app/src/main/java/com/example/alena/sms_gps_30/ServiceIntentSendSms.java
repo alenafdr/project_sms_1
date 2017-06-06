@@ -14,7 +14,7 @@ import com.example.alena.sms_gps_30.help_classes.SaveInHistoryTask;
 public class ServiceIntentSendSms extends IntentService {
 
 
-    private static final String TAG = "SMS_GPS_2";
+    private static final String TAG = ActivityMap.TAG + " sendSMS";
 
     public ServiceIntentSendSms() {
         super("ServiceIntentSmsSend");
@@ -39,7 +39,7 @@ public class ServiceIntentSendSms extends IntentService {
     }
 
     public void saveMessageInHistory(String phoneNumber, String message){
-        if (!message.equals("&GET&")) {
+        if (!message.equals("&GET&") && message.contains("SHOW")) {
             SaveInHistoryTask historyTask = new SaveInHistoryTask(getApplicationContext(), ItemHistory.TYPE_SENT, message, phoneNumber);
             historyTask.execute();
         }

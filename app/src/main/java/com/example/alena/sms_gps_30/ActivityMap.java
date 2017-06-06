@@ -19,6 +19,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
@@ -58,7 +59,7 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
     private GoogleMap mGoogleMap;
     private boolean isAutoCompleteTextView = false;
     private boolean receivedLocation = false;
-    private final int maxTimeWaitAnswer = 120;
+    private final int maxTimeWaitAnswer = 45;
     private ProgressBar progressBar;
     private ImageButton imageButtonGet;
     private FragmentHistory mFragmentHistory;
@@ -67,9 +68,6 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
     private NavigationView navigationView;
     private ActionBarDrawerToggle toggle;
     private TimerTask timerTask;
-
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,7 +87,14 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
         menuItemId = R.id.menu_map;
 
         toggle = new ActionBarDrawerToggle(
-                this, mDrawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                this, mDrawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close){
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+            }
+        };
         mDrawerLayout.setDrawerListener(toggle);
         toggle.syncState();
 
@@ -110,7 +115,13 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
         mFragmentSettings = new FragmentSettings();
     }
 
-
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (timerTask != null) {
+            timerTask.stop();
+        }
+    }
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -118,7 +129,7 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
         Log.d(TAG, "onNewIntent");
 
         if (timerTask != null) {
-            timerTask.cancel(true);
+            timerTask.stop();
             imageButtonGet.setVisibility(ImageButton.VISIBLE);
             progressBar.setVisibility(ProgressBar.INVISIBLE);
         }
@@ -176,10 +187,8 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
         int id = item.getItemId();
         if (id == R.id.action_settings) {
             return true;
-        } else if (id == android.R.id.home) {
-            onBackPressed();
-            return true;
         }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -320,6 +329,7 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
             public void onClick(View v) {
                 imageButtonGet.setVisibility(ImageButton.VISIBLE);
                 progressBar.setVisibility(ProgressBar.INVISIBLE);
+                timerTask.stop();
             }
         });
     }
@@ -432,8 +442,13 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
 
     private class TimerTask extends AsyncTask<Void,Void ,Void> {
         int count;
+        private boolean isStop = false;
         public TimerTask() {
             this.count = 0;
+        }
+
+        public void stop(){
+            isStop = true;
         }
 
         @Override
@@ -446,7 +461,7 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
             super.onPostExecute(aVoid);
             imageButtonGet.setVisibility(ImageButton.VISIBLE);
             progressBar.setVisibility(ProgressBar.INVISIBLE);
-            Toast.makeText(getApplicationContext(), "Время ожидания истекло, местоположение не получено", Toast.LENGTH_SHORT).show();
+
         }
 
         @Override
@@ -460,11 +475,16 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
                 try {
                     Thread.sleep(1000);
                     count++;
+                    Log.d(TAG, "TimerTask " + count);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
 
-            } while (count < maxTimeWaitAnswer);
+            } while ((count < maxTimeWaitAnswer) && !isStop);
+
+            if (count == maxTimeWaitAnswer) {
+                Toast.makeText(getApplicationContext(), "Время ожидания истекло, местоположение не получено", Toast.LENGTH_SHORT).show();
+            }
 
             return null;
         }

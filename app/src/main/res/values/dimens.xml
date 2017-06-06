@@ -9,4 +9,6 @@
     <dimen name="dimen_text_name">20sp</dimen>
     <dimen name="dimen_text_number">16sp</dimen>
     <dimen name="margin_image_button_find_me">8dp</dimen>
+    <dimen name="auto_complete_width">236dp</dimen>
+    <dimen name="auto_complete_text_size">20sp</dimen>
 </resources>

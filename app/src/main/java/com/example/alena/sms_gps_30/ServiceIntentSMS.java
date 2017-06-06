@@ -25,10 +25,6 @@ public class ServiceIntentSMS extends IntentService {
     public ServiceIntentSMS() {
         super("ServiceIntentSMS");
     }
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
 
     @Override
     public void onCreate() {
@@ -76,6 +72,11 @@ public class ServiceIntentSMS extends IntentService {
 
             Log.d(TAG, "стартовал активность с картой");
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
     }
 
     public void saveMessageInHistory(String phoneNumber, String message){
