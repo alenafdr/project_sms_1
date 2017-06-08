@@ -2,8 +2,8 @@ package com.example.alena.sms_gps_30.help_classes;
 
 
 public class ItemHistory {
-    public static String TYPE_SENT = "sent";
-    public static String TYPE_RECEIVED = "received";
+    public static String TYPE_SENT = "sent"; //исходящий
+    public static String TYPE_RECEIVED = "received"; //входящий
 
     private String type;
     private String name;

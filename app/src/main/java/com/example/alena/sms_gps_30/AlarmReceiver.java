@@ -12,10 +12,17 @@ public class AlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.d(TAG, "Alarm");
-        if(!ServiceGPS.sentGPS) {
-            ServiceGPS.sentGPS = true;
-            Log.d(TAG, "Запустил selectLocation");
-            ServiceGPS.myLocationListener.selectLocation();
+        String ACTION = intent.getAction();
+
+        if (ACTION.equals(ServiceGPS.ACTION)){
+            if(!ServiceGPS.sentGPS) {
+                ServiceGPS.sentGPS = true;
+                Log.d(TAG, "Запустил selectLocation");
+                ServiceGPS.myLocationListener.selectLocation();
+            }
+        } else if (ACTION.equals(".ActivityMap")){
+            //надо ли отключать по будильнику, если в любом случае будет смс?
         }
+
     }
 }

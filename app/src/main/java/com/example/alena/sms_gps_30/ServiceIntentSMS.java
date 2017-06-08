@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.provider.ContactsContract;
 import android.util.Log;
+import android.widget.ProgressBar;
 
 import com.example.alena.sms_gps_30.help_classes.ItemHistory;
 import com.example.alena.sms_gps_30.help_classes.SaveInHistoryTask;
@@ -15,9 +16,10 @@ import com.google.android.gms.maps.model.LatLng;
 
 public class ServiceIntentSMS extends IntentService {
 
-
+    public static final String ACTION = ServiceIntentSMS.class.getName() + "ERR";
     final String command_get = "GET";
     final String command_show = "SHOW";
+    final String command_err = "ERR";
     private static final String TAG = ActivityMap.TAG + " serviceSMS";
     String sms_body;
     String sms_from;
@@ -52,25 +54,14 @@ public class ServiceIntentSMS extends IntentService {
         }
 
         if (messages[1].equals(command_show)) {
-            //Расшифровать
-            //открыть окно с картой
-            Log.d(TAG, command_show);
-            saveMessageInHistory(sms_from, sms_body);
+            saveMessageInHistory(sms_from, sms_body); //сохраняет в истории, настройках и открывает карту
+        }
 
-            try {
-                Log.d(TAG, "засыпает");
-                Thread.sleep(1500);
-                Log.d(TAG, "проснулся");
-            } catch (InterruptedException e) {
-                Log.d(TAG, e.toString());
-                e.printStackTrace();
-            }
-
-            Intent intentActivityMaps = new Intent(getApplicationContext(), ActivityMap.class);
-            intentActivityMaps.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            getApplicationContext().startActivity(intentActivityMaps);
-
-            Log.d(TAG, "стартовал активность с картой");
+        if (messages[1].equals(command_err)) {
+            Intent intentMap = new Intent(getApplicationContext(), ActivityMap.class);
+            intentMap.setAction(ACTION);
+            intentMap.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            getApplicationContext().startActivity(intentMap);
         }
     }
 
@@ -80,7 +71,7 @@ public class ServiceIntentSMS extends IntentService {
     }
 
     public void saveMessageInHistory(String phoneNumber, String message){
-        Log.d(TAG, "сохраняет в истории");
+
         SaveInHistoryTask historyTask = new SaveInHistoryTask(getApplicationContext(), ItemHistory.TYPE_RECEIVED, message, phoneNumber);
         historyTask.execute();
     }
@@ -101,38 +92,7 @@ public class ServiceIntentSMS extends IntentService {
         SharedPreferences sPref = getApplication().getSharedPreferences(ActivityMap.APP_PREFERENCES, Context.MODE_PRIVATE);
         String whiteList = sPref.getString(FragmentWhiteList.WHITE_NUMBERS, "");
 
-        Log.d(TAG, "number " + number + "whitelist " + whiteList);
+        /*Log.d(TAG, "number " + number + "whitelist " + whiteList);*/
         return whiteList.contains(numberForSearch);
-    }
-
-    public String getNameByNumber(String number){
-        String name = "";
-        ContentResolver cr = getApplicationContext().getContentResolver();
-        String numberForSearch = "";
-        if(number.contains("+")){
-            numberForSearch = number.substring(2);
-        } else {
-            numberForSearch = number.substring(1);
-        }
-
-        String[] columns = {ContactsContract.CommonDataKinds.Phone._ID,
-                ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
-                ContactsContract.CommonDataKinds.Phone.NUMBER};
-        String selection = ContactsContract.CommonDataKinds.Phone.NUMBER + " = ?";
-        String[] selectionArgs = new String[] { numberForSearch };
-
-        Cursor phones = cr.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, columns,selection,selectionArgs, null);
-
-        try {
-            while (phones.moveToNext() && name.equals(""))
-            {
-                name = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return name;
-        }
-        phones.close();
-        return name;
     }
 }

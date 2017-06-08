@@ -3,6 +3,7 @@ package com.example.alena.sms_gps_30.help_classes;
 
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.location.Address;
@@ -29,8 +30,11 @@ import javax.net.ssl.HttpsURLConnection;
 
 public class SaveInHistoryTask extends AsyncTask<Void, Void, Void> {
 
-    private static final String TAG = ActivityMap.TAG + " task";
+    public static final String ACTION = SaveInHistoryTask.class.getName() + "newLocation";
+
+    private final String TAG = ActivityMap.TAG + " task";
     private final String KEY = "AIzaSyBkQaKiuWQDSsrZE67xKXr5t5HMqpxNJ84";
+
 
     private String type, number, message;
     private Context context;
@@ -58,6 +62,10 @@ public class SaveInHistoryTask extends AsyncTask<Void, Void, Void> {
         String link = messages[7];
         String address = getAddress(latitude, longitude);
 
+        if(address.equals("")){
+            address = latitude + ", " + longitude;
+        }
+
         String name = getNameByNumber(phoneNumber);
 
         DBHelperProvider dbHelperProvider = new DBHelperProvider(context);
@@ -70,7 +78,7 @@ public class SaveInHistoryTask extends AsyncTask<Void, Void, Void> {
                 phoneNumber,
                 type));
 
-        saveInSharPref(name,
+        saveInSharPrefAndOpenMap(name,
                 phoneNumber,
                 accuracyTime,
                 Float.valueOf(latitude),
@@ -109,7 +117,7 @@ public class SaveInHistoryTask extends AsyncTask<Void, Void, Void> {
         return name;
     }
 
-    public void saveInSharPref(String name, String number, String data , float latitude, float longitude, float accuracy) {
+    public void saveInSharPrefAndOpenMap(String name, String number, String data , float latitude, float longitude, float accuracy) {
         SharedPreferences sPref = context.getSharedPreferences(ActivityMap.APP_PREFERENCES, Context.MODE_PRIVATE);
         SharedPreferences.Editor ed = sPref.edit();
         ed.putString(ActivityMap.LAST_NAME, name);
@@ -120,6 +128,16 @@ public class SaveInHistoryTask extends AsyncTask<Void, Void, Void> {
         ed.putFloat(ActivityMap.LAST_ACCURACY, accuracy);
         ed.apply();
         Log.d(TAG, "сохранил в Preferences");
+
+        if (!type.equals(ItemHistory.TYPE_SENT)) {
+            Intent intentActivityMaps = new Intent(context, ActivityMap.class);
+            intentActivityMaps.setAction(ACTION);
+            intentActivityMaps.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intentActivityMaps);
+            Log.d(TAG, "стартовал активность с картой");
+        }
+
+
     }
 
 

@@ -26,11 +26,12 @@ import java.util.List;
 
 public class FragmentHistory extends Fragment {
 
+    public static LinearLayout llBottomSheet;
     private OnFragmentInteractionListener mListener;
     private final String TAG = ActivityMap.TAG + " FragmentHist";
     ListView listHistory;
     TextView textViewHeader;
-    LinearLayout llBottomSheet;
+
     onSomeEventListener someEventListener;
     ArrayAdapter<String> adapter;
     HistoryAdapter historyAdapter;

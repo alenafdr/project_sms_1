@@ -10,28 +10,32 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.IBinder;
-import android.os.PowerManager;
 import android.util.Log;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
 public class ServiceGPS extends Service {
 
     public static boolean sentGPS; //Флаг "Координаты отправлены"
-    private final String TAG = ActivityMap.TAG + " GPS";
-
     public static MyLocationListener myLocationListener;
+    public static final String ACTION = ServiceGPS.class.getName() + ".ACTION";
+
+
+    private final String TAG = ActivityMap.TAG + " GPS";
     private String phoneNumber;
-
-
-
     private double timeStart; //Для отслеживания времени работы сервиса
-    private static final String NAME = ServiceGPS.class.getName() + ".Lock";
+    private final long maxTimeWaitAnswer = 45 * 1000;
 
     public ServiceGPS() {
     }
@@ -45,12 +49,19 @@ public class ServiceGPS extends Service {
     public void onCreate() {
         super.onCreate();
         Log.d(TAG, "служба GPS создана");
+
+        saveFile("служба GPS создана");
+
         sentGPS = false;
+
+        myLocationListener = new MyLocationListener();
+
         AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
         Intent broadcastIntent = new Intent(getApplicationContext(), AlarmReceiver.class);
+        broadcastIntent.setAction(ACTION);
         PendingIntent piAlarm = PendingIntent.getBroadcast(this, 0, broadcastIntent, PendingIntent.FLAG_ONE_SHOT);
 
-        long timeForAlarm = System.currentTimeMillis() + 60 * 1000;
+        long timeForAlarm = System.currentTimeMillis() + maxTimeWaitAnswer;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
         {
@@ -62,12 +73,16 @@ public class ServiceGPS extends Service {
         else
             am.set(AlarmManager.RTC_WAKEUP, timeForAlarm, piAlarm);
 
+
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss", Locale.US);
+        String time = sdf.format(new Date(timeForAlarm));
+        saveFile("будильник установлен " + time);
+
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        myLocationListener = new MyLocationListener();
         phoneNumber = intent.getStringExtra("phoneNumber");
         timeStart = System.currentTimeMillis();
         return Service.START_STICKY ;
@@ -86,9 +101,12 @@ public class ServiceGPS extends Service {
         private Location currentLocationGPS;
         private Location currentLocationNetwork;
         private LocationManager locationManager;
+        private int countChangeLocation;
 
         MyLocationListener(){
             locationManager =(LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+            countChangeLocation = 0;
 
             //получаем последнее известное местоположение
             try {
@@ -114,7 +132,7 @@ public class ServiceGPS extends Service {
 
         }
 
-        public void listenerRegistration(String provider) {
+        private void listenerRegistration(String provider) {
             try {
                 locationManager.requestLocationUpdates(provider, 0, 0, this);
                 Log.d(TAG, "Подписались на " + provider + Thread.currentThread().getName());
@@ -129,11 +147,11 @@ public class ServiceGPS extends Service {
         synchronized void stopUsingGPS(){
             if(locationManager != null){
                 try {
-                    if (this != null) {
-                        locationManager.removeUpdates(this);
-                        locationManager = null;
-                        Log.d(TAG, "!!!!!!!!!!!stopUsingGPS " + Thread.currentThread().getName());
-                    }
+
+                    locationManager.removeUpdates(this);
+                    locationManager = null;
+                    Log.d(TAG, "!!!!!!!!!!!stopUsingGPS " + Thread.currentThread().getName());
+
                 } catch (SecurityException e) {
                     e.printStackTrace();
                     Log.d(TAG, e.toString());
@@ -145,37 +163,48 @@ public class ServiceGPS extends Service {
         }
 
         public synchronized void selectLocation(){
-            sentGPS = true;
-            int provider = 0;
-            Location locationForSend = null;
-            if (currentLocationGPS != null) {
-                locationForSend = currentLocationGPS;
-                provider = 1;
-            } else if (currentLocationNetwork != null) {
-                locationForSend = currentLocationNetwork;
-                provider = 2;
-            } else {
-                if ((lastLocationGPS != null) && (lastLocationNetwork != null)) {
-                    if (lastLocationGPS.getTime() > lastLocationNetwork.getTime()) {
-                        locationForSend = lastLocationGPS;
-                        provider = 3;
-                    } else {
-                        locationForSend = lastLocationNetwork;
-                        provider = 4;
-                    }
+            try {
+                sentGPS = true;
+                int provider = 0;
+                Location locationForSend = null;
+                if (currentLocationGPS != null) {
+                    saveFile("currentLocationGPS != null");
+                    locationForSend = currentLocationGPS;
+                    provider = 1;
+                } else if (currentLocationNetwork != null) {
+                    saveFile("currentLocationNetwork != null");
+                    locationForSend = currentLocationNetwork;
+                    provider = 2;
                 } else {
-                    if (lastLocationGPS != null) {
-                        locationForSend = lastLocationGPS;
-                        provider = 3;
-                    }
-                    if (lastLocationNetwork != null) {
-                        locationForSend = lastLocationNetwork;
-                        provider = 4;
+                    if ((lastLocationGPS != null) && (lastLocationNetwork != null)) {
+                        if (lastLocationGPS.getTime() > lastLocationNetwork.getTime()) {
+                            saveFile("lastLocationGPS.getTime() > lastLocationNetwork.getTime()");
+                            locationForSend = lastLocationGPS;
+                            provider = 3;
+                        } else {
+                            saveFile("lastLocationGPS.getTime() < lastLocationNetwork.getTime()");
+                            locationForSend = lastLocationNetwork;
+                            provider = 4;
+                        }
+                    } else {
+                        if (lastLocationGPS != null) {
+                            saveFile("lastLocationGPS != null");
+                            locationForSend = lastLocationGPS;
+                            provider = 3;
+                        }
+                        if (lastLocationNetwork != null) {
+                            saveFile("lastLocationNetwork != null");
+                            locationForSend = lastLocationNetwork;
+                            provider = 4;
+                        }
                     }
                 }
+                sendGPS(locationForSend, provider) ;
+                stopUsingGPS();
+            } catch (Exception e) {
+                e.printStackTrace();
+                saveFile(e.toString());
             }
-            sendGPS(locationForSend, provider) ;
-            stopUsingGPS();
         }
 
         @Override
@@ -184,10 +213,15 @@ public class ServiceGPS extends Service {
                 currentLocationGPS = location;
                 Toast.makeText(getApplicationContext(), "Получил новое местоположение " + location.getProvider(), Toast.LENGTH_LONG).show();
                 if (!sentGPS) {
+                    saveFile("получено обновление, выбирается локация");
                     selectLocation();
                 }
             } else if (location.getProvider().equals(LocationManager.NETWORK_PROVIDER)) {
                 currentLocationNetwork = location;
+                countChangeLocation++;
+                if(countChangeLocation > 1){
+                    selectLocation();
+                }
             }
             Log.d(TAG, "Получил новое местоположение " + location.getProvider() + " " + Thread.currentThread().getName());
         }
@@ -222,6 +256,8 @@ public class ServiceGPS extends Service {
                     + "&" + longitude
                     + "&" +"https://maps.google.com/maps?q="+  latitude + "," + longitude;
 
+            saveFile(message);
+
             Log.d(TAG, "Сформировал смс, поток " + Thread.currentThread().getName());
             Intent smsSendIntentService = new Intent(getApplicationContext(), ServiceIntentSendSms.class);
             smsSendIntentService.putExtra("message", message);
@@ -231,12 +267,54 @@ public class ServiceGPS extends Service {
         } else {
             int timeForAnswer =(int) (System.currentTimeMillis() - timeStart) / 1000;
             LocationManager locationManager =(LocationManager) getSystemService(Context.LOCATION_SERVICE);
-            message = "location is null, GPS " + locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) + " " + timeForAnswer;
+            message = "&ERR&location is null, GPS " + locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) + " " + timeForAnswer;
+
+            saveFile(message);
+
             Intent smsSendIntentService = new Intent(getApplicationContext(), ServiceIntentSendSms.class);
             smsSendIntentService.putExtra("message", message);
             smsSendIntentService.putExtra("phoneNumber", phoneNumber);
             getApplicationContext().startService(smsSendIntentService);
         }
         stopSelf();
+    }
+
+    private void saveFile(String text) {
+        String dirPath =  Environment.getExternalStorageDirectory() + File.separator + "LOGS" +File.separator;
+        String name = "Logs.txt";
+        File projDir = new File(dirPath);
+        if (!projDir.exists()) projDir.mkdir();
+        SimpleDateFormat sdf = new SimpleDateFormat("MM-dd HH:mm:ss.SSS", Locale.US);
+        String time = sdf.format(new Date(System.currentTimeMillis()));
+
+        /*File file = new File(projDir.toString());*/
+
+        try {
+            File logfile = new File(dirPath, name);
+            FileWriter writer = new FileWriter(logfile,true);
+            writer.write(time + " " + text + "\r\n");
+            writer.flush();
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        /*try {
+            FileOutputStream fos = new FileOutputStream(file);
+            fos.write(message.getBytes());
+            fos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }*/
+
+        /*try {
+            OutputStream outputStream = openFileOutput(dirPath + name, MODE_APPEND);
+            OutputStreamWriter osw = new OutputStreamWriter(outputStream);
+            osw.write(time + " " + text + "\n");
+            osw.close();
+        } catch (Throwable t) {
+            Toast.makeText(getApplicationContext(),"Exception: " + t.toString(), Toast.LENGTH_LONG).show();
+        }*/
     }
 }

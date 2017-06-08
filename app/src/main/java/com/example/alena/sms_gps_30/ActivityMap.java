@@ -1,14 +1,18 @@
 package com.example.alena.sms_gps_30;
 
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.FragmentTransaction;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -52,6 +56,11 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
     public static final String LAST_LAT = "last latitude";
     public static final String LAST_LNG = "last longitude";
     public static final String LAST_ACCURACY = "last accuracy";
+    public static final String ACTION = ActivityMap.class.getName() + "ACTION";
+    public static boolean sentLocation; //для проверки будильника, получено местоположение по запросу
+    public static ProgressBar progressBar;
+    public static ImageButton imageButtonGet;
+
 
     private SharedPreferences sPref;
     private DrawerLayout mDrawerLayout;
@@ -59,15 +68,14 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
     private GoogleMap mGoogleMap;
     private boolean isAutoCompleteTextView = false;
     private boolean receivedLocation = false;
-    private final int maxTimeWaitAnswer = 45;
-    private ProgressBar progressBar;
-    private ImageButton imageButtonGet;
+    private final long maxTimeWaitAnswer = 60 * 1000;
+
     private FragmentHistory mFragmentHistory;
     private FragmentWhiteList mFragmentWhiteList;
     private FragmentSettings mFragmentSettings;
     private NavigationView navigationView;
     private ActionBarDrawerToggle toggle;
-    private TimerTask timerTask;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,23 +126,20 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
     @Override
     protected void onPause() {
         super.onPause();
-        if (timerTask != null) {
-            timerTask.stop();
-        }
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        Log.d(TAG, "onNewIntent");
+        Log.d(TAG, "onNewIntent " + intent.getAction());
+        String action = intent.getAction();
+        imageButtonGet.setVisibility(ImageButton.VISIBLE);
+        progressBar.setVisibility(ProgressBar.INVISIBLE);
 
-        if (timerTask != null) {
-            timerTask.stop();
-            imageButtonGet.setVisibility(ImageButton.VISIBLE);
-            progressBar.setVisibility(ProgressBar.INVISIBLE);
+        if (!action.equals(ServiceIntentSMS.ACTION)){
+            showLastLocation();
+            sentLocation = true; //для отслеживания будильником, получено местоположение. возможно не пригодится
         }
-
-        showLastLocation();
 
         if (mFragmentHistory.isVisible()) {
             mFragmentHistory.updateTableHistory();
@@ -157,6 +162,11 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
         }
 
         if (id == R.id.menu_history){
+
+            if(menuItemId == R.id.menu_history){
+                BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from(FragmentHistory.llBottomSheet);
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+            }
 
             ft.setCustomAnimations(R.animator.fragment_enter, 0);
             ft.replace(R.id.container, mFragmentHistory);
@@ -226,7 +236,7 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
 
     public void onBackPressed() {
 
-        if (transitionSettingsWhiteList) {
+        if (transitionSettingsWhiteList) { //проверяет, открыт ли белый лист через настройки
             FragmentTransaction ft = getFragmentManager().beginTransaction();
             ft.setCustomAnimations(R.animator.fragment_enter, R.animator.fragment_exit);
             ft.replace(R.id.container, mFragmentSettings);
@@ -278,9 +288,25 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
                                 sendSMS(loadNumber());
                                 progressBar.setVisibility(ProgressBar.VISIBLE);
                                 imageButtonGet.setVisibility(ImageButton.INVISIBLE);
-                                timerTask = new TimerTask();
-                                timerTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                               /* timerTask.execute();*/
+                                sentLocation = false;
+
+                                /*AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
+                                Intent broadcastIntent = new Intent(getApplicationContext(), AlarmReceiver.class);
+                                broadcastIntent.setAction(ACTION);
+                                PendingIntent piAlarm = PendingIntent.getBroadcast(getApplicationContext(), 0, broadcastIntent, PendingIntent.FLAG_ONE_SHOT);
+
+                                long timeForAlarm = System.currentTimeMillis() + maxTimeWaitAnswer;
+
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+                                {
+                                    final AlarmManager.AlarmClockInfo alarmClockInfo = new AlarmManager.AlarmClockInfo(timeForAlarm, piAlarm);
+                                    am.setAlarmClock(alarmClockInfo, piAlarm);
+                                }
+                                else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                                    am.setExact(AlarmManager.RTC_WAKEUP,timeForAlarm, piAlarm);
+                                else
+                                    am.set(AlarmManager.RTC_WAKEUP, timeForAlarm, piAlarm);*/
+
                             } else {
                                 Intent intentSEND = new Intent(getApplicationContext(), ServiceGPS.class);
                                 intentSEND.putExtra("phoneNumber", loadNumber());
@@ -329,7 +355,6 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
             public void onClick(View v) {
                 imageButtonGet.setVisibility(ImageButton.VISIBLE);
                 progressBar.setVisibility(ProgressBar.INVISIBLE);
-                timerTask.stop();
             }
         });
     }
@@ -440,7 +465,7 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
         getApplicationContext().startService(smsSendIntentService);
     }
 
-    private class TimerTask extends AsyncTask<Void,Void ,Void> {
+    /*private class TimerTask extends AsyncTask<Void,Void ,Void> {
         int count;
         private boolean isStop = false;
         public TimerTask() {
@@ -488,5 +513,5 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
 
             return null;
         }
-    }
+    }*/
 }
