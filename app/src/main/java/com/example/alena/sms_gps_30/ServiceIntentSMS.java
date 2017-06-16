@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.net.Uri;
+import android.os.Environment;
 import android.provider.ContactsContract;
 import android.util.Log;
 import android.widget.ProgressBar;
@@ -13,6 +15,13 @@ import android.widget.ProgressBar;
 import com.example.alena.sms_gps_30.help_classes.ItemHistory;
 import com.example.alena.sms_gps_30.help_classes.SaveInHistoryTask;
 import com.google.android.gms.maps.model.LatLng;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class ServiceIntentSMS extends IntentService {
 
@@ -41,23 +50,30 @@ public class ServiceIntentSMS extends IntentService {
 
         Log.d(TAG, "стартовал ServiceIntentSMS");
 
+        saveFile("стартовал ServiceIntentSMS");
+
         if (messages[1].equals(command_get)) {
             //запустить сервис с запросом GPS
+            saveFile(command_get);
             if (!isWhiteListEnable() || isNumberInWhiteList(sms_from)){
                 Intent intentServiceGPS = new Intent(getApplicationContext(), ServiceGPS.class);
                 intentServiceGPS.putExtra("phoneNumber", sms_from);
                 getApplicationContext().startService(intentServiceGPS);
                 Log.d(TAG, "стартовал сервис");
+                saveFile("стартовал сервис GPS");
             } else {
                 Log.d(TAG, "номера нет в белом списке");
+                saveFile("номера нет в белом списке");
             }
         }
 
         if (messages[1].equals(command_show)) {
             saveMessageInHistory(sms_from, sms_body); //сохраняет в истории, настройках и открывает карту
+            saveFile("saveMessageInHistory");
         }
 
         if (messages[1].equals(command_err)) {
+            saveFile(command_err);
             Intent intentMap = new Intent(getApplicationContext(), ActivityMap.class);
             intentMap.setAction(ACTION);
             intentMap.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -94,5 +110,24 @@ public class ServiceIntentSMS extends IntentService {
 
         /*Log.d(TAG, "number " + number + "whitelist " + whiteList);*/
         return whiteList.contains(numberForSearch);
+    }
+
+    private void saveFile(String text) {
+        String dirPath =  Environment.getExternalStorageDirectory() + File.separator + "LOGS" +File.separator;
+        String name = "Logs.txt";
+        File projDir = new File(dirPath);
+        if (!projDir.exists()) projDir.mkdir();
+        SimpleDateFormat sdf = new SimpleDateFormat("MM-dd HH:mm:ss.SSS", Locale.US);
+        String time = sdf.format(new Date(System.currentTimeMillis()));
+
+        try {
+            File logfile = new File(dirPath, name);
+            FileWriter writer = new FileWriter(logfile,true);
+            writer.write(time + " " + text + "\r\n");
+            writer.flush();
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

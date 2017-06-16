@@ -68,6 +68,10 @@ public class SaveInHistoryTask extends AsyncTask<Void, Void, Void> {
 
         String name = getNameByNumber(phoneNumber);
 
+        if (type.equals(ItemHistory.TYPE_SENT)){
+            name = "Я => " + name;
+        }
+
         DBHelperProvider dbHelperProvider = new DBHelperProvider(context);
         dbHelperProvider.addItemHistoryInDB(new ItemHistory(Float.valueOf(accuracy),
                 address,
@@ -129,14 +133,13 @@ public class SaveInHistoryTask extends AsyncTask<Void, Void, Void> {
         ed.apply();
         Log.d(TAG, "сохранил в Preferences");
 
-        if (!type.equals(ItemHistory.TYPE_SENT)) {
+        if (type.equals(ItemHistory.TYPE_RECEIVED)) {
             Intent intentActivityMaps = new Intent(context, ActivityMap.class);
             intentActivityMaps.setAction(ACTION);
             intentActivityMaps.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(intentActivityMaps);
             Log.d(TAG, "стартовал активность с картой");
         }
-
 
     }
 

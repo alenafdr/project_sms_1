@@ -1,16 +1,13 @@
 package com.example.alena.sms_gps_30;
 
-import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.FragmentTransaction;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.os.AsyncTask;
-import android.os.Build;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.NavigationView;
@@ -18,7 +15,6 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
@@ -38,15 +34,23 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class ActivityMap extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, FragmentHistory.onSomeEventListener {
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
+public class ActivityMap extends AppCompatActivity implements
+        NavigationView.OnNavigationItemSelectedListener,
+        OnMapReadyCallback,
+        FragmentHistory.onSomeEventListener {
 
     public static int menuItemId;
-    public static boolean transitionSettingsWhiteList = false;
+    public static boolean transitionSettingsWhiteList = false;//запущен ли белый список из настроек
 
     public static final String TAG = "SMSGPS3.0";
     public static final String APP_PREFERENCES = "com.example.alena.sms_gps_30";
@@ -57,28 +61,22 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
     public static final String LAST_LNG = "last longitude";
     public static final String LAST_ACCURACY = "last accuracy";
     public static final String ACTION = ActivityMap.class.getName() + "ACTION";
-    public static boolean sentLocation; //для проверки будильника, получено местоположение по запросу
-    public static ProgressBar progressBar;
-    public static ImageButton imageButtonGet;
 
-
+    private ProgressBar progressBar;
+    private ImageButton imageButtonGet;
     private SharedPreferences sPref;
     private DrawerLayout mDrawerLayout;
     private AutoCompleteTextView mAutoCompleteTextView;
     private GoogleMap mGoogleMap;
     private boolean isAutoCompleteTextView = false;
-    private boolean receivedLocation = false;
-    private final long maxTimeWaitAnswer = 60 * 1000;
-
     private FragmentHistory mFragmentHistory;
     private FragmentWhiteList mFragmentWhiteList;
     private FragmentSettings mFragmentSettings;
     private NavigationView navigationView;
-    private ActionBarDrawerToggle toggle;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -94,10 +92,10 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
         navigationView.setCheckedItem(R.id.menu_map);
         menuItemId = R.id.menu_map;
 
-        toggle = new ActionBarDrawerToggle(
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, mDrawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close){
             @Override
-            public void onDrawerOpened(View drawerView) {
+            public void onDrawerOpened(View drawerView) { //закрывает клавиатуру если открыта шторка
                 super.onDrawerOpened(drawerView);
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
@@ -124,8 +122,23 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
+    @Override
     protected void onPause() {
         super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
     @Override
@@ -138,7 +151,6 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
 
         if (!action.equals(ServiceIntentSMS.ACTION)){
             showLastLocation();
-            sentLocation = true; //для отслеживания будильником, получено местоположение. возможно не пригодится
         }
 
         if (mFragmentHistory.isVisible()) {
@@ -288,7 +300,6 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
                                 sendSMS(loadNumber());
                                 progressBar.setVisibility(ProgressBar.VISIBLE);
                                 imageButtonGet.setVisibility(ImageButton.INVISIBLE);
-                                sentLocation = false;
 
                                 /*AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
                                 Intent broadcastIntent = new Intent(getApplicationContext(), AlarmReceiver.class);
@@ -331,10 +342,15 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
 
     private void initAutoCompleteTextView() {
         mAutoCompleteTextView.setAdapter(new ContactsAdapterAutoComplete(getApplicationContext()));
+        String name = loadName();
 
-        /*if (!loadName().equals("")){
-            mAutoCompleteTextView.setText(loadName());
-        }*/
+        if (!name.equals("")){
+            if (name.contains("Я => ")){
+                name = name.substring(5);
+            }
+            mAutoCompleteTextView.setText(name);
+            isAutoCompleteTextView = true;
+        }
 
         mAutoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -344,7 +360,6 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
                 saveName(contact.getName());
                 saveNumber(contact.getNumber());
                 isAutoCompleteTextView = true;
-                /*showLastLocation(contact.getNumber());*/
             }
         });
     }
@@ -359,7 +374,7 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
         });
     }
 
-    public void showLastLocation(){
+    private void showLastLocation(){
 
         mGoogleMap.clear();
         LatLng nullLatLng = new LatLng(0, 0);
@@ -372,7 +387,19 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
                     .build();
             CameraUpdate cameraUpdate = CameraUpdateFactory.newCameraPosition(cameraPosition);
             mGoogleMap.animateCamera(cameraUpdate);
-            mGoogleMap.addMarker(new MarkerOptions().position(loadLatLng()).title(loadName() + " - " + loadData()));
+
+            if (loadName().contains("Я =>")){
+                mGoogleMap.addMarker(new MarkerOptions() //мое местоположение
+                        .position(loadLatLng())
+                        .title(loadData())
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+            } else {
+
+                mGoogleMap.addMarker(new MarkerOptions() //чужое актуальное
+                        .position(loadLatLng())
+                        .title(loadData())
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+            }
 
             CircleOptions circleOptions = new CircleOptions()
                     .center(loadLatLng())
@@ -385,42 +412,42 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
         }
     }
 
-    public void saveName(String name) {
+    private void saveName(String name) {
         sPref = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sPref.edit();
         editor.putString(LAST_NAME, name);
         editor.apply();
     }
 
-    public void saveNumber (String number) {
+    private void saveNumber (String number) {
         sPref = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sPref.edit();
         editor.putString(LAST_NUMBER, number);
         editor.apply();
     }
 
-    public void saveData (String data) {
+    private void saveData (String data) {
         sPref = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sPref.edit();
         editor.putString(LAST_DATA, data);
         editor.apply();
     }
 
-    public void saveAccuracy (float accuracy) {
+    private void saveAccuracy (float accuracy) {
         sPref = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sPref.edit();
         editor.putFloat(LAST_ACCURACY, accuracy);
         editor.apply();
     }
 
-    public void saveLatitude (float latitude) {
+    private void saveLatitude (float latitude) {
         sPref = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sPref.edit();
         editor.putFloat(LAST_LAT, latitude);
         editor.apply();
     }
 
-    public void saveLongitude (float longitude) {
+    private void saveLongitude (float longitude) {
         sPref = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sPref.edit();
         editor.putFloat(LAST_LNG, longitude);
@@ -464,54 +491,4 @@ public class ActivityMap extends AppCompatActivity implements NavigationView.OnN
         smsSendIntentService.putExtra("phoneNumber", phoneNumber);
         getApplicationContext().startService(smsSendIntentService);
     }
-
-    /*private class TimerTask extends AsyncTask<Void,Void ,Void> {
-        int count;
-        private boolean isStop = false;
-        public TimerTask() {
-            this.count = 0;
-        }
-
-        public void stop(){
-            isStop = true;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            imageButtonGet.setVisibility(ImageButton.VISIBLE);
-            progressBar.setVisibility(ProgressBar.INVISIBLE);
-
-        }
-
-        @Override
-        protected void onProgressUpdate(Void... values) {
-            super.onProgressUpdate(values);
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            do {
-                try {
-                    Thread.sleep(1000);
-                    count++;
-                    Log.d(TAG, "TimerTask " + count);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-            } while ((count < maxTimeWaitAnswer) && !isStop);
-
-            if (count == maxTimeWaitAnswer) {
-                Toast.makeText(getApplicationContext(), "Время ожидания истекло, местоположение не получено", Toast.LENGTH_SHORT).show();
-            }
-
-            return null;
-        }
-    }*/
 }

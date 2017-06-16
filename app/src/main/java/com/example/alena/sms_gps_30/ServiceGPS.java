@@ -16,11 +16,8 @@ import android.util.Log;
 import android.widget.Toast;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -28,6 +25,7 @@ import java.util.Locale;
 public class ServiceGPS extends Service {
 
     public static boolean sentGPS; //Флаг "Координаты отправлены"
+    public static String formatForTine = "yy.MM.dd, HH:mm";
     public static MyLocationListener myLocationListener;
     public static final String ACTION = ServiceGPS.class.getName() + ".ACTION";
 
@@ -77,7 +75,6 @@ public class ServiceGPS extends Service {
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss", Locale.US);
         String time = sdf.format(new Date(timeForAlarm));
         saveFile("будильник установлен " + time);
-
     }
 
     @Override
@@ -93,6 +90,7 @@ public class ServiceGPS extends Service {
         super.onDestroy();
         myLocationListener = null;
         Log.d(TAG, "!!!!!!!служба GPS уничтожена ");
+        saveFile("!!!!!!!служба GPS уничтожена ");
     }
 
     public class MyLocationListener implements LocationListener {
@@ -244,7 +242,7 @@ public class ServiceGPS extends Service {
         String message;
 
         if (location != null) {
-            SimpleDateFormat sdf = new SimpleDateFormat("dd MMM, HH:mm", Locale.US);
+            SimpleDateFormat sdf = new SimpleDateFormat(formatForTine, Locale.US);
             String time = sdf.format(new Date(location.getTime()));
             float latitude =(float) location.getLatitude();
             float longitude = (float) location.getLongitude();
@@ -287,8 +285,6 @@ public class ServiceGPS extends Service {
         SimpleDateFormat sdf = new SimpleDateFormat("MM-dd HH:mm:ss.SSS", Locale.US);
         String time = sdf.format(new Date(System.currentTimeMillis()));
 
-        /*File file = new File(projDir.toString());*/
-
         try {
             File logfile = new File(dirPath, name);
             FileWriter writer = new FileWriter(logfile,true);
@@ -298,23 +294,5 @@ public class ServiceGPS extends Service {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
-        /*try {
-            FileOutputStream fos = new FileOutputStream(file);
-            fos.write(message.getBytes());
-            fos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
-
-        /*try {
-            OutputStream outputStream = openFileOutput(dirPath + name, MODE_APPEND);
-            OutputStreamWriter osw = new OutputStreamWriter(outputStream);
-            osw.write(time + " " + text + "\n");
-            osw.close();
-        } catch (Throwable t) {
-            Toast.makeText(getApplicationContext(),"Exception: " + t.toString(), Toast.LENGTH_LONG).show();
-        }*/
     }
 }

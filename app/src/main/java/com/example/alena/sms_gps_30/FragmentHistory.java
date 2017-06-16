@@ -129,6 +129,7 @@ public class FragmentHistory extends Fragment {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     String name = ((TextView)view.findViewById(R.id.textViewItemHistoryName)).getText().toString();
+
                     String number = ((TextView)view.findViewById(R.id.textViewItemHistoryNumber)).getText().toString();
                     String data = ((TextView)view.findViewById(R.id.textViewItemHistoryData)).getText().toString();
                     String accuracy = ((TextView)view.findViewById(R.id.textViewItemHistoryAcc)).getText().toString();
