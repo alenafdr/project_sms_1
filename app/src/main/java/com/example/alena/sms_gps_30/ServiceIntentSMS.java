@@ -50,17 +50,14 @@ public class ServiceIntentSMS extends IntentService {
 
         Log.d(TAG, "стартовал ServiceIntentSMS");
 
-        saveFile("стартовал ServiceIntentSMS");
-
         if (messages[1].equals(command_get)) {
             //запустить сервис с запросом GPS
-            saveFile(command_get);
+
             if (!isWhiteListEnable() || isNumberInWhiteList(sms_from)){
                 Intent intentServiceGPS = new Intent(getApplicationContext(), ServiceGPS.class);
                 intentServiceGPS.putExtra("phoneNumber", sms_from);
                 getApplicationContext().startService(intentServiceGPS);
                 Log.d(TAG, "стартовал сервис");
-                saveFile("стартовал сервис GPS");
             } else {
                 Log.d(TAG, "номера нет в белом списке");
                 saveFile("номера нет в белом списке");
@@ -69,11 +66,9 @@ public class ServiceIntentSMS extends IntentService {
 
         if (messages[1].equals(command_show)) {
             saveMessageInHistory(sms_from, sms_body); //сохраняет в истории, настройках и открывает карту
-            saveFile("saveMessageInHistory");
         }
 
         if (messages[1].equals(command_err)) {
-            saveFile(command_err);
             Intent intentMap = new Intent(getApplicationContext(), ActivityMap.class);
             intentMap.setAction(ACTION);
             intentMap.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -113,21 +108,10 @@ public class ServiceIntentSMS extends IntentService {
     }
 
     private void saveFile(String text) {
-        String dirPath =  Environment.getExternalStorageDirectory() + File.separator + "LOGS" +File.separator;
-        String name = "Logs.txt";
-        File projDir = new File(dirPath);
-        if (!projDir.exists()) projDir.mkdir();
-        SimpleDateFormat sdf = new SimpleDateFormat("MM-dd HH:mm:ss.SSS", Locale.US);
-        String time = sdf.format(new Date(System.currentTimeMillis()));
 
-        try {
-            File logfile = new File(dirPath, name);
-            FileWriter writer = new FileWriter(logfile,true);
-            writer.write(time + " " + text + "\r\n");
-            writer.flush();
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Intent logsIntent = new Intent(getApplicationContext(), ServiceIntentSaveLOGs.class);
+        logsIntent.putExtra(ServiceIntentSaveLOGs.TIME_LOGS, System.currentTimeMillis());
+        logsIntent.putExtra(ServiceIntentSaveLOGs.TEXT_LOGS, text);
+        getApplicationContext().startService(logsIntent);
     }
 }

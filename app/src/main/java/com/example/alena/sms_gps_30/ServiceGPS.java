@@ -48,8 +48,6 @@ public class ServiceGPS extends Service {
         super.onCreate();
         Log.d(TAG, "служба GPS создана");
 
-        saveFile("служба GPS создана");
-
         sentGPS = false;
 
         myLocationListener = new MyLocationListener();
@@ -74,7 +72,6 @@ public class ServiceGPS extends Service {
 
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss", Locale.US);
         String time = sdf.format(new Date(timeForAlarm));
-        saveFile("будильник установлен " + time);
     }
 
     @Override
@@ -90,7 +87,6 @@ public class ServiceGPS extends Service {
         super.onDestroy();
         myLocationListener = null;
         Log.d(TAG, "!!!!!!!служба GPS уничтожена ");
-        saveFile("!!!!!!!служба GPS уничтожена ");
     }
 
     public class MyLocationListener implements LocationListener {
@@ -166,32 +162,26 @@ public class ServiceGPS extends Service {
                 int provider = 0;
                 Location locationForSend = null;
                 if (currentLocationGPS != null) {
-                    saveFile("currentLocationGPS != null");
                     locationForSend = currentLocationGPS;
                     provider = 1;
                 } else if (currentLocationNetwork != null) {
-                    saveFile("currentLocationNetwork != null");
                     locationForSend = currentLocationNetwork;
                     provider = 2;
                 } else {
                     if ((lastLocationGPS != null) && (lastLocationNetwork != null)) {
                         if (lastLocationGPS.getTime() > lastLocationNetwork.getTime()) {
-                            saveFile("lastLocationGPS.getTime() > lastLocationNetwork.getTime()");
                             locationForSend = lastLocationGPS;
                             provider = 3;
                         } else {
-                            saveFile("lastLocationGPS.getTime() < lastLocationNetwork.getTime()");
                             locationForSend = lastLocationNetwork;
                             provider = 4;
                         }
                     } else {
                         if (lastLocationGPS != null) {
-                            saveFile("lastLocationGPS != null");
                             locationForSend = lastLocationGPS;
                             provider = 3;
                         }
                         if (lastLocationNetwork != null) {
-                            saveFile("lastLocationNetwork != null");
                             locationForSend = lastLocationNetwork;
                             provider = 4;
                         }
@@ -211,7 +201,6 @@ public class ServiceGPS extends Service {
                 currentLocationGPS = location;
                 Toast.makeText(getApplicationContext(), "Получил новое местоположение " + location.getProvider(), Toast.LENGTH_LONG).show();
                 if (!sentGPS) {
-                    saveFile("получено обновление, выбирается локация");
                     selectLocation();
                 }
             } else if (location.getProvider().equals(LocationManager.NETWORK_PROVIDER)) {
@@ -278,21 +267,9 @@ public class ServiceGPS extends Service {
     }
 
     private void saveFile(String text) {
-        String dirPath =  Environment.getExternalStorageDirectory() + File.separator + "LOGS" +File.separator;
-        String name = "Logs.txt";
-        File projDir = new File(dirPath);
-        if (!projDir.exists()) projDir.mkdir();
-        SimpleDateFormat sdf = new SimpleDateFormat("MM-dd HH:mm:ss.SSS", Locale.US);
-        String time = sdf.format(new Date(System.currentTimeMillis()));
-
-        try {
-            File logfile = new File(dirPath, name);
-            FileWriter writer = new FileWriter(logfile,true);
-            writer.write(time + " " + text + "\r\n");
-            writer.flush();
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Intent logsIntent = new Intent(getApplicationContext(), ServiceIntentSaveLOGs.class);
+        logsIntent.putExtra(ServiceIntentSaveLOGs.TIME_LOGS, System.currentTimeMillis());
+        logsIntent.putExtra(ServiceIntentSaveLOGs.TEXT_LOGS, text);
+        getApplicationContext().startService(logsIntent);
     }
 }

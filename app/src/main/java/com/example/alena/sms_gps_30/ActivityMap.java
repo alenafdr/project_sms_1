@@ -72,6 +72,7 @@ public class ActivityMap extends AppCompatActivity implements
     private FragmentHistory mFragmentHistory;
     private FragmentWhiteList mFragmentWhiteList;
     private FragmentSettings mFragmentSettings;
+    private FragmentSendLogs mFragmentSendLogs;
     private NavigationView navigationView;
 
     @Override
@@ -119,6 +120,7 @@ public class ActivityMap extends AppCompatActivity implements
         mFragmentHistory = new FragmentHistory();
         mFragmentWhiteList = new FragmentWhiteList();
         mFragmentSettings = new FragmentSettings();
+        mFragmentSendLogs = new FragmentSendLogs();
     }
 
     @Override
@@ -169,6 +171,7 @@ public class ActivityMap extends AppCompatActivity implements
             ft.remove(mFragmentHistory);
             ft.remove(mFragmentSettings);
             ft.remove(mFragmentWhiteList);
+            ft.remove(mFragmentSendLogs);
             ft.commit();
             menuItemId = R.id.menu_map;
         }
@@ -198,6 +201,13 @@ public class ActivityMap extends AppCompatActivity implements
             ft.replace(R.id.container, mFragmentSettings);
             ft.commit();
             menuItemId = R.id.menu_settings;
+        }
+
+        if (id == R.id.menu_logs) {
+            ft.setCustomAnimations(R.animator.fragment_enter, 0);
+            ft.replace(R.id.container, mFragmentSendLogs);
+            ft.commit();
+            menuItemId = R.id.menu_logs;
         }
 
         mDrawerLayout.closeDrawer(GravityCompat.START);

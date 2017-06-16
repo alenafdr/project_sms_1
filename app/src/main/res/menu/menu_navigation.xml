@@ -40,6 +40,12 @@
             android:icon="@drawable/ic_menu_settings"
             android:tint="@color/grey"
             android:title="@string/text_menu_settings" />
+
+        <item
+            android:id="@+id/menu_logs"
+            android:icon="@drawable/ic_menu_logs"
+            android:tint="@color/grey"
+            android:title="@string/text_menu_send_logs" />
         </group>
 
 </menu>

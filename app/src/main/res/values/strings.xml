@@ -11,11 +11,13 @@
     <string name="text_menu_white_list">Белый список</string>
     <string name="text_for_bottom_sheet_peek">История</string>
 
- <!--   <string name="y_for_animator_xhdpi">1500</string>
+    <!--   <string name="y_for_animator_xhdpi">1500</string>
     <string name="y_for_animator">1280</string>-->
 
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="text_button_clear_history">Очистить историю</string>
+    <string name="text_menu_send_logs">Отправить логи</string>
 
 </resources>

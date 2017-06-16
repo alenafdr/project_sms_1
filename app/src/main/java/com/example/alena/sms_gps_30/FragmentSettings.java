@@ -8,21 +8,32 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.alena.sms_gps_30.help_classes.DBHelperProvider;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 public class FragmentSettings extends Fragment {
 
     public static final String CHECK_BOX_WHITE_LIST = "CheckBoxWhiteList";
+    final String TAG = ActivityMap.TAG + " settings";
 
     CheckBox checkBox;
     Button buttonClearHistory;
+    TextView textViewLogs;
 
     private OnFragmentInteractionListener mListener;
 
@@ -50,9 +61,10 @@ public class FragmentSettings extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_settings1, container, false);
+        View view = inflater.inflate(R.layout.fragment_settings, container, false);
         checkBox = (CheckBox) view.findViewById(R.id.checkBox);
         buttonClearHistory = (Button) view.findViewById(R.id.buttonClearHistory);
+        textViewLogs = (TextView) view.findViewById(R.id.textViewLogs);
         return view;
     }
 
@@ -75,6 +87,8 @@ public class FragmentSettings extends Fragment {
                 }
             }
         });
+
+        openFile();
 
         buttonClearHistory.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -118,9 +132,6 @@ public class FragmentSettings extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
-
-
-
     public void savePreferences(boolean checkBoxWhiteList){
         SharedPreferences sPref = getActivity().getSharedPreferences(ActivityMap.APP_PREFERENCES, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sPref.edit();
@@ -133,5 +144,29 @@ public class FragmentSettings extends Fragment {
         return sPref.getBoolean(CHECK_BOX_WHITE_LIST, false);
     }
 
+    private void openFile() {
+        try {
+            /*InputStream inputStream = getActivity().openFileInput(ServiceIntentSaveLOGs.FILE_NAME);*/
 
+
+            File file = new File(getActivity().getFilesDir(),"LOGS");
+            File gpxfile = new File(file, ServiceIntentSaveLOGs.FILE_NAME);
+            
+            FileReader fileReader1 = new FileReader(gpxfile);
+            BufferedReader reader = new BufferedReader(fileReader1);
+            String line;
+            StringBuilder builder = new StringBuilder();
+
+            while ((line = reader.readLine()) != null) {
+                builder.append(line + "\n");
+            }
+
+            fileReader1.close();
+            textViewLogs.setText(builder.toString());
+
+        } catch (Throwable t) {
+            textViewLogs.setText("логи пусты");
+            Log.d(TAG, t.toString());
+        }
+    }
 }

@@ -43,8 +43,9 @@ public class ReceiverSMS extends BroadcastReceiver {
             }
             String body = bodyText.toString();
 
-            saveFile("From: " + sms_from + " - " + body);
+
             if (body.charAt(0) == '&') {
+                saveFile("From: " + sms_from + " - " + body);
                 Intent mIntent = new Intent(context, ServiceIntentSMS.class);
                 mIntent.putExtra("sms_body", body);
                 mIntent.putExtra("sms_from", sms_from);
@@ -57,7 +58,12 @@ public class ReceiverSMS extends BroadcastReceiver {
     }
 
     private void saveFile(String text) {
-        String dirPath =  Environment.getExternalStorageDirectory() + File.separator + "LOGS" +File.separator;
+        Intent logsIntent = new Intent(mContext, ServiceIntentSaveLOGs.class);
+        logsIntent.putExtra(ServiceIntentSaveLOGs.TIME_LOGS, System.currentTimeMillis());
+        logsIntent.putExtra(ServiceIntentSaveLOGs.TEXT_LOGS, text);
+        mContext.startService(logsIntent);
+
+        /*String dirPath =  Environment.getExternalStorageDirectory() + File.separator + "LOGS" +File.separator;
         String name = "Logs.txt";
         File projDir = new File(dirPath);
         if (!projDir.exists()) projDir.mkdir();
@@ -72,8 +78,7 @@ public class ReceiverSMS extends BroadcastReceiver {
             writer.close();
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
     }
-
 
 }
