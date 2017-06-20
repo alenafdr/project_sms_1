@@ -1,4 +1,5 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -6,12 +7,34 @@
     android:background="@color/white">
 
     <!-- TODO: Update blank fragment layout -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:id="@+id/frameLayoutButtonBack"
+        >
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/scrim_gradient"
+            />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/ic_button_back"
+            android:id="@+id/imageButtonBack"
+            android:background="@android:color/transparent"
+            android:layout_margin="8dp"/>
+
+
+    </FrameLayout>
 <EditText
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:id="@+id/editTextLogs"
     android:hint="Введите сообщение разработчику"
-    android:layout_margin="16dp"/>
+    android:layout_below="@id/frameLayoutButtonBack"
+    android:layout_marginLeft="16dp"/>
 
     <Button
         android:text="Отправить"

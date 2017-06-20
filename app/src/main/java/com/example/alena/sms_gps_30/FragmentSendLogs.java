@@ -1,5 +1,7 @@
 package com.example.alena.sms_gps_30;
 
+import android.app.FragmentTransaction;
+import android.app.Instrumentation;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
@@ -10,11 +12,13 @@ import android.os.Bundle;
 import android.app.Fragment;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
@@ -38,6 +42,7 @@ public class FragmentSendLogs extends Fragment {
 
     EditText editText;
     Button buttonSendLogs;
+
 
     public FragmentSendLogs() {
         // Required empty public constructor
@@ -74,6 +79,14 @@ public class FragmentSendLogs extends Fragment {
                 requestTask.execute(editText.getText().toString());
             }
         });
+
+        ImageButton buttonBack = (ImageButton) view.findViewById(R.id.imageButtonBack);
+        buttonBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                stopSelf();
+            }
+        });
         return view;
     }
 
@@ -82,6 +95,13 @@ public class FragmentSendLogs extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    private void stopSelf(){
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        ft.setCustomAnimations(0, R.animator.fragment_exit);
+        ft.remove(this);
+        ft.commit();
     }
 
     public interface OnFragmentInteractionListener {

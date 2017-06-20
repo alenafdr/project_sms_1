@@ -44,7 +44,10 @@ import com.google.android.gms.maps.model.MarkerOptions;
 public class ActivityMap extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener,
         OnMapReadyCallback,
-        FragmentHistory.onSomeEventListener {
+        FragmentHistory.onSomeEventListener,
+        FragmentSettings.onSomeEventListener,
+        FragmentWhiteList.onSomeEventListener
+{
 
 
     public static int menuItemId;
@@ -246,17 +249,23 @@ public class ActivityMap extends AppCompatActivity implements
 
     @Override
     public void someEvent(String s) {
-        String[] strings = s.split("#");
+
+        if (!s.equals("end")) {
+            String[] strings = s.split("#");
         /*for (int i = 0; i < strings.length; i++) {
             Log.d(TAG, String.valueOf(strings[i]));
         }*/
-        saveName(strings[0]);
-        saveNumber(strings[1]);
-        saveData(strings[2]);
-        saveAccuracy(Float.valueOf(strings[3]));
-        saveLatitude(Float.valueOf(strings[4]));
-        saveLongitude(Float.valueOf(strings[5]));
-        showLastLocation();
+            saveName(strings[0]);
+            saveNumber(strings[1]);
+            saveData(strings[2]);
+            saveAccuracy(Float.valueOf(strings[3]));
+            saveLatitude(Float.valueOf(strings[4]));
+            saveLongitude(Float.valueOf(strings[5]));
+            showLastLocation();
+        } else {
+            menuItemId = R.id.menu_map;
+            navigationView.setCheckedItem(R.id.menu_map);
+        }
     }
 
     public void onBackPressed() {

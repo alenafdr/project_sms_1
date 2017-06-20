@@ -1,5 +1,6 @@
 package com.example.alena.sms_gps_30;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.FragmentTransaction;
 import android.content.Context;
@@ -15,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,6 +37,12 @@ public class FragmentSettings extends Fragment {
     Button buttonClearHistory;
     TextView textViewLogs;
 
+    onSomeEventListener someEventListener;
+
+    public interface onSomeEventListener {
+        public void someEvent(String s);
+    }
+
     private OnFragmentInteractionListener mListener;
 
     public FragmentSettings() {
@@ -42,13 +50,12 @@ public class FragmentSettings extends Fragment {
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            someEventListener = (FragmentSettings.onSomeEventListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() + " must implement onSomeEventListener");
         }
     }
 
@@ -65,6 +72,13 @@ public class FragmentSettings extends Fragment {
         checkBox = (CheckBox) view.findViewById(R.id.checkBox);
         buttonClearHistory = (Button) view.findViewById(R.id.buttonClearHistory);
         textViewLogs = (TextView) view.findViewById(R.id.textViewLogs);
+        ImageButton buttonBack = (ImageButton) view.findViewById(R.id.imageButtonBack);
+        buttonBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                stopSelf();
+            }
+        });
         return view;
     }
 
@@ -168,5 +182,13 @@ public class FragmentSettings extends Fragment {
             textViewLogs.setText("логи пусты");
             Log.d(TAG, t.toString());
         }
+    }
+
+    private void stopSelf(){
+        someEventListener.someEvent("end");
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        ft.setCustomAnimations(0, R.animator.fragment_exit);
+        ft.remove(this);
+        ft.commit();
     }
 }

@@ -6,6 +6,25 @@
     tools:context="com.example.alena.sms_gps_30.FragmentWhiteList"
     android:background="@color/white">
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:id="@+id/frameLayoutButtonBack"
+        >
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/scrim_gradient"
+            />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/ic_button_back"
+            android:id="@+id/imageButtonBack"
+            android:background="@android:color/transparent"
+            android:layout_margin="8dp"/>
+    </FrameLayout>
 
     <AutoCompleteTextView
         android:layout_width="wrap_content"
@@ -15,14 +34,17 @@
         android:hint="@string/text_for_auto_complete"
         android:layout_toLeftOf="@+id/imageButtonAddContact"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_below="@id/frameLayoutButtonBack"
+        android:layout_marginLeft="16dp"/>
 
     <ListView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:id="@+id/listViewWhiteList"
-        android:layout_below="@+id/autoCompleteTextViewWhiteList">
+        android:layout_below="@+id/autoCompleteTextViewWhiteList"
+        >
 
     </ListView>
 
@@ -31,7 +53,7 @@
         android:layout_height="wrap_content"
         app:srcCompat="@android:drawable/ic_input_add"
         android:id="@+id/imageButtonAddContact"
-        android:layout_alignParentTop="true"
+        android:layout_below="@+id/frameLayoutButtonBack"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
 </RelativeLayout>

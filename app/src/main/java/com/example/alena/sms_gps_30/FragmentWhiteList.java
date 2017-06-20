@@ -1,5 +1,6 @@
 package com.example.alena.sms_gps_30;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -50,18 +51,23 @@ public class FragmentWhiteList extends Fragment {
     private ListView whiteListListView;
     private String number;
 
+    onSomeEventListener someEventListener;
+
+    public interface onSomeEventListener {
+        public void someEvent(String s);
+    }
+
     public FragmentWhiteList() {
         // Required empty public constructor
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            someEventListener = (FragmentWhiteList.onSomeEventListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() + " must implement onSomeEventListener");
         }
     }
 
@@ -78,6 +84,13 @@ public class FragmentWhiteList extends Fragment {
         autoCompleteTextView = (AutoCompleteTextView) view.findViewById(R.id.autoCompleteTextViewWhiteList);
         imageButtonAddContact = (ImageButton) view.findViewById(R.id.imageButtonAddContact);
         whiteListListView = (ListView) view.findViewById(R.id.listViewWhiteList);
+        ImageButton buttonBack = (ImageButton) view.findViewById(R.id.imageButtonBack);
+        buttonBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                stopSelf();
+            }
+        });
         return view;
     }
 
@@ -290,5 +303,24 @@ public class FragmentWhiteList extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    private void stopSelf(){
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+
+
+        if (ActivityMap.transitionSettingsWhiteList) { //проверяет, открыт ли белый лист через настройки
+            ft.setCustomAnimations(R.animator.fragment_enter, R.animator.fragment_exit);
+            ActivityMap.menuItemId = R.id.menu_settings;
+            ActivityMap.transitionSettingsWhiteList = false;
+            getActivity().getFragmentManager().popBackStack();
+        } else {
+            ft.setCustomAnimations(0, R.animator.fragment_exit);
+            ft.remove(this);
+            ft.commit();
+        }
+
+
+
     }
 }
