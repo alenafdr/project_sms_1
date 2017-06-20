@@ -13,6 +13,7 @@ import android.provider.ContactsContract;
 import android.util.Log;
 
 import com.example.alena.sms_gps_30.ActivityMap;
+import com.example.alena.sms_gps_30.ServiceIntentSaveLOGs;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -115,6 +116,7 @@ public class SaveInHistoryTask extends AsyncTask<Void, Void, Void> {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            saveFile("SaveInHistoryTask119 " + e.toString());
             return name;
         }
         phones.close();
@@ -167,6 +169,7 @@ public class SaveInHistoryTask extends AsyncTask<Void, Void, Void> {
         }
         catch (IOException e) {
             e.printStackTrace();
+            saveFile("SaveInHistoryTask172 " + e.toString());
         }
         return addressString;
     }
@@ -181,9 +184,9 @@ public class SaveInHistoryTask extends AsyncTask<Void, Void, Void> {
             Log.d(TAG,"Отправил координаты " + lat + lng);
         } catch (IOException e) {
             e.printStackTrace();
-            Log.d(TAG, e.toString());
+            saveFile("SaveInHistoryTask187 " + e.toString());
         } catch (Exception e) {
-            Log.d(TAG, e.toString());
+            saveFile("SaveInHistoryTask189 " + e.toString());
         }
 
         try {
@@ -213,6 +216,7 @@ public class SaveInHistoryTask extends AsyncTask<Void, Void, Void> {
         } catch (JSONException e) {
             e.printStackTrace();
             Log.d(TAG, e.toString());
+            saveFile("SaveInHistoryTask219 " + e.toString());
         }
         Log.d(TAG, listAddresess.toString());
         for (int i = listAddresess.size()-1; i >= 0; i--) {
@@ -249,5 +253,12 @@ public class SaveInHistoryTask extends AsyncTask<Void, Void, Void> {
                 reader.close();
             }
         }
+    }
+
+    private void saveFile(String text) {
+        Intent logsIntent = new Intent(context, ServiceIntentSaveLOGs.class);
+        logsIntent.putExtra(ServiceIntentSaveLOGs.TIME_LOGS, System.currentTimeMillis());
+        logsIntent.putExtra(ServiceIntentSaveLOGs.TEXT_LOGS, text);
+        context.startService(logsIntent);
     }
 }

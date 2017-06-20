@@ -10,14 +10,10 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -108,16 +104,20 @@ public class ServiceGPS extends Service {
                 Log.d(TAG, "Последнее известное GPS" + Thread.currentThread().getName());
             } catch (SecurityException e) {
                 Log.d(TAG, "Последнее известное GPS" + e.toString());
+                saveFile("ServiceGPS " + e.toString());
             } catch (Exception e) {
                 Log.d(TAG, "Последнее известное GPS" + e.toString());
+                saveFile("ServiceGPS " + e.toString());
             }
             try {
                 lastLocationNetwork = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
                 Log.d(TAG, "Последнее известное нетворк" + Thread.currentThread().getName());
             } catch (SecurityException e) {
                 Log.d(TAG, "Последнее известное нетворк" + e.toString());
+                saveFile("ServiceGPS " + e.toString());
             } catch (Exception e) {
                 Log.d(TAG, "Последнее известное нетворк" + e.toString());
+                saveFile("ServiceGPS " + e.toString());
             }
 
             //Подписываемся на обновления
@@ -130,11 +130,11 @@ public class ServiceGPS extends Service {
             try {
                 locationManager.requestLocationUpdates(provider, 0, 0, this);
                 Log.d(TAG, "Подписались на " + provider + Thread.currentThread().getName());
-                Toast.makeText(getApplicationContext(), "Подписались на " + provider, Toast.LENGTH_LONG).show();
             } catch (SecurityException e) {
                 e.printStackTrace();
+                saveFile("ServiceGPS " + e.toString());
             } catch (Exception e) {
-                Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_LONG).show();
+                saveFile("ServiceGPS " + e.toString());
             }
         }
 
@@ -149,9 +149,10 @@ public class ServiceGPS extends Service {
                 } catch (SecurityException e) {
                     e.printStackTrace();
                     Log.d(TAG, e.toString());
-                    Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_SHORT).show();
+                    saveFile("ServiceGPS " + e.toString());
                 } catch (Exception e) {
                     Log.d(TAG, "stopUsingGPS" + e.toString());
+                    saveFile("ServiceGPS " + e.toString());
                 }
             }
         }
@@ -191,7 +192,7 @@ public class ServiceGPS extends Service {
                 stopUsingGPS();
             } catch (Exception e) {
                 e.printStackTrace();
-                saveFile(e.toString());
+                saveFile("ServiceGPS " + e.toString());
             }
         }
 
@@ -243,10 +244,8 @@ public class ServiceGPS extends Service {
                     + "&" + longitude
                     + "&" +"https://maps.google.com/maps?q="+  latitude + "," + longitude;
 
-            saveFile(message);
-
             Log.d(TAG, "Сформировал смс, поток " + Thread.currentThread().getName());
-            Intent smsSendIntentService = new Intent(getApplicationContext(), ServiceIntentSendSms.class);
+            Intent smsSendIntentService = new Intent(getApplicationContext(), ServiceSendSms.class);
             smsSendIntentService.putExtra("message", message);
             smsSendIntentService.putExtra("phoneNumber", phoneNumber);
             getApplicationContext().startService(smsSendIntentService);
@@ -256,9 +255,7 @@ public class ServiceGPS extends Service {
             LocationManager locationManager =(LocationManager) getSystemService(Context.LOCATION_SERVICE);
             message = "&ERR&location is null, GPS " + locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) + " " + timeForAnswer;
 
-            saveFile(message);
-
-            Intent smsSendIntentService = new Intent(getApplicationContext(), ServiceIntentSendSms.class);
+            Intent smsSendIntentService = new Intent(getApplicationContext(), ServiceSendSms.class);
             smsSendIntentService.putExtra("message", message);
             smsSendIntentService.putExtra("phoneNumber", phoneNumber);
             getApplicationContext().startService(smsSendIntentService);

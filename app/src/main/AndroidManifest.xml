@@ -48,7 +48,7 @@
             android:value="AIzaSyBA_T0W9qGCXKwgcZ_0e8CESc0Hgr7yAZA" />
 
         <service
-            android:name=".ServiceIntentSendSms"
+            android:name=".ServiceSendSms"
             android:exported="false" />
         <service
             android:name=".ServiceGPS"

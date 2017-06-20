@@ -41,10 +41,6 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-
 public class ActivityMap extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener,
         OnMapReadyCallback,
@@ -521,7 +517,7 @@ public class ActivityMap extends AppCompatActivity implements
 
     private void sendSMS(String phoneNumber){
         String message = "&GET&";
-        Intent smsSendIntentService = new Intent(getApplicationContext(), ServiceIntentSendSms.class);
+        Intent smsSendIntentService = new Intent(getApplicationContext(), ServiceSendSms.class);
         smsSendIntentService.putExtra("message", message);
         smsSendIntentService.putExtra("phoneNumber", phoneNumber);
         getApplicationContext().startService(smsSendIntentService);

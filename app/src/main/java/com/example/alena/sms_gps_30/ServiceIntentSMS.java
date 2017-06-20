@@ -60,7 +60,7 @@ public class ServiceIntentSMS extends IntentService {
                 Log.d(TAG, "стартовал сервис");
             } else {
                 Log.d(TAG, "номера нет в белом списке");
-                saveFile("номера нет в белом списке");
+                saveFile("ServiceIntentSMS номера нет в белом списке");
             }
         }
 

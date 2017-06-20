@@ -16,13 +16,13 @@ import android.widget.Toast;
 import com.example.alena.sms_gps_30.help_classes.ItemHistory;
 import com.example.alena.sms_gps_30.help_classes.SaveInHistoryTask;
 
-public class ServiceIntentSendSms extends Service {
+public class ServiceSendSms extends Service {
 
     private static final String TAG = ActivityMap.TAG + " sendSMS";
     BroadcastReceiver broadcastReceiverSend;
     BroadcastReceiver broadcastReceiverDelivered;
 
-    public ServiceIntentSendSms() {
+    public ServiceSendSms() {
 
     }
 
