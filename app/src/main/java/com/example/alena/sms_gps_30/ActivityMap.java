@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -49,9 +50,11 @@ public class ActivityMap extends AppCompatActivity implements
         OnMapReadyCallback,
         FragmentHistory.onSomeEventListener {
 
+
     public static int menuItemId;
     public static boolean transitionSettingsWhiteList = false;//запущен ли белый список из настроек
 
+    public static final String VERSION = "version";
     public static final String TAG = "SMSGPS3.0";
     public static final String APP_PREFERENCES = "com.example.alena.sms_gps_30";
     public static final String LAST_NAME = "last name";
@@ -121,7 +124,11 @@ public class ActivityMap extends AppCompatActivity implements
         mFragmentWhiteList = new FragmentWhiteList();
         mFragmentSettings = new FragmentSettings();
         mFragmentSendLogs = new FragmentSendLogs();
+
+        saveVersion();
     }
+
+
 
     @Override
     protected void onStart() {
@@ -273,6 +280,7 @@ public class ActivityMap extends AppCompatActivity implements
             ft.remove(mFragmentHistory);
             ft.remove(mFragmentSettings);
             ft.remove(mFragmentWhiteList);
+            ft.remove(mFragmentSendLogs);
             ft.commit();
             menuItemId = R.id.menu_map;
             navigationView.setCheckedItem(R.id.menu_map);
@@ -298,10 +306,13 @@ public class ActivityMap extends AppCompatActivity implements
                     } else {
                         mMassage = "Отправить местоположение абоненту ";
                     }
-
+                    String name = loadName();
+                    if (name.contains("Я => ")){
+                        name = name.substring(5);
+                    }
                     AlertDialog.Builder alertDialog = new AlertDialog.Builder(ActivityMap.this);
                     alertDialog.setTitle("Внимание!")
-                            .setMessage(mMassage + loadName() + " по номеру " + loadNumber() + "?")
+                            .setMessage(mMassage + name + " по номеру " + loadNumber() + "?")
                             .setCancelable(true);
                     alertDialog.setPositiveButton("Ок", new DialogInterface.OnClickListener() {
                         @Override
@@ -462,6 +473,20 @@ public class ActivityMap extends AppCompatActivity implements
         SharedPreferences.Editor editor = sPref.edit();
         editor.putFloat(LAST_LNG, longitude);
         editor.apply();
+    }
+
+    private void saveVersion() {
+        try {
+            String version = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+            sPref = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sPref.edit();
+            editor.putString(VERSION, version);
+            editor.apply();
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+
+
     }
 
     private String loadName(){
