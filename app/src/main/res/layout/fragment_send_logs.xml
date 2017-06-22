@@ -28,12 +28,62 @@
 
 
     </FrameLayout>
-<EditText
+    <TextView
+        android:text="@string/text_add_message_in_logs"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/frameLayoutButtonBack"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="12dp"
+        android:id="@+id/textViewAddMessageInLogs"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:layout_margin="16dp"
+        />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/editTextMessageLogs"
+        android:hint="Введите сообщение"
+        android:layout_below="@+id/textViewAddMessageInLogs"
+        android:layout_marginLeft="16dp"/>
+
+    <Button
+        android:text="Добавить"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="129dp"
+        android:layout_marginStart="129dp"
+        android:id="@+id/buttonMessageLogs"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_below="@+id/editTextMessageLogs"/>
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="@color/white_grey"
+        android:layout_below="@+id/buttonMessageLogs"
+        android:id="@+id/dividerView"/>
+
+
+    <TextView
+        android:text="Отправить логи разработчику"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/dividerView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="12dp"
+        android:id="@+id/textViewSendLogs"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:layout_margin="16dp"
+        />
+
+    <EditText
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:id="@+id/editTextLogs"
     android:hint="Введите сообщение разработчику"
-    android:layout_below="@id/frameLayoutButtonBack"
+    android:layout_below="@+id/textViewSendLogs"
     android:layout_marginLeft="16dp"/>
 
     <Button
@@ -43,8 +93,8 @@
         android:layout_marginLeft="129dp"
         android:layout_marginStart="129dp"
         android:id="@+id/buttonSendLogs"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
+        android:layout_below="@+id/editTextLogs"
         style="@style/Widget.AppCompat.Button.Borderless" />
+
+
 </RelativeLayout>

@@ -85,11 +85,11 @@ public class ServiceSendSms extends Service {
             switch(getResultCode())
             {
                 case Activity.RESULT_OK:
-                    Toast.makeText(getBaseContext(),"SMS sent",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getBaseContext(),"сообщение отправлено",Toast.LENGTH_SHORT).show();
                     Log.d(TAG, "SMS sent");
                     break;
                 case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
-                    Toast.makeText(getBaseContext(),"Generic failure",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getBaseContext(),"Общий сбой",Toast.LENGTH_SHORT).show();
                     Log.d(TAG, "Generic failure");
                     break;
                 case SmsManager.RESULT_ERROR_NO_SERVICE:
@@ -114,11 +114,11 @@ public class ServiceSendSms extends Service {
             switch(getResultCode())
             {
                 case Activity.RESULT_OK:
-                    Toast.makeText(getBaseContext(),"SMS delivered",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getBaseContext(),"сообщение доставлено",Toast.LENGTH_SHORT).show();
                     Log.d(TAG, "SMS delivered");
                     break;
                 case Activity.RESULT_CANCELED:
-                    Toast.makeText(getBaseContext(),"SMS not delivered",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getBaseContext(),"сообщение не доставлено",Toast.LENGTH_SHORT).show();
                     Log.d(TAG, "SMS not delivered");
                     break;
             }

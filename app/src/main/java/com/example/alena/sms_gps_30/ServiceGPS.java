@@ -253,7 +253,8 @@ public class ServiceGPS extends Service {
         } else {
             int timeForAnswer =(int) (System.currentTimeMillis() - timeStart) / 1000;
             LocationManager locationManager =(LocationManager) getSystemService(Context.LOCATION_SERVICE);
-            message = "&ERR&location is null, GPS " + locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) + " " + timeForAnswer;
+            String statusGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)? "вкл": "выкл";
+            message = "&ERR&местоположение не получено, GPS " + locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 
             Intent smsSendIntentService = new Intent(getApplicationContext(), ServiceSendSms.class);
             smsSendIntentService.putExtra("message", message);

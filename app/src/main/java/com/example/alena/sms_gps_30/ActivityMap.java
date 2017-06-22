@@ -46,7 +46,8 @@ public class ActivityMap extends AppCompatActivity implements
         OnMapReadyCallback,
         FragmentHistory.onSomeEventListener,
         FragmentSettings.onSomeEventListener,
-        FragmentWhiteList.onSomeEventListener
+        FragmentWhiteList.onSomeEventListener,
+        FragmentSendLogs.onSomeEventListener
 {
 
 
@@ -418,13 +419,13 @@ public class ActivityMap extends AppCompatActivity implements
                 mGoogleMap.addMarker(new MarkerOptions() //мое местоположение
                         .position(loadLatLng())
                         .title(loadData())
-                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
             } else {
 
                 mGoogleMap.addMarker(new MarkerOptions() //чужое актуальное
                         .position(loadLatLng())
                         .title(loadData())
-                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
             }
 
             CircleOptions circleOptions = new CircleOptions()

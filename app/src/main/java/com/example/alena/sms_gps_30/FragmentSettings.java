@@ -35,7 +35,6 @@ public class FragmentSettings extends Fragment {
 
     CheckBox checkBox;
     Button buttonClearHistory;
-    TextView textViewLogs;
 
     onSomeEventListener someEventListener;
 
@@ -71,7 +70,6 @@ public class FragmentSettings extends Fragment {
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
         checkBox = (CheckBox) view.findViewById(R.id.checkBox);
         buttonClearHistory = (Button) view.findViewById(R.id.buttonClearHistory);
-        textViewLogs = (TextView) view.findViewById(R.id.textViewLogs);
         ImageButton buttonBack = (ImageButton) view.findViewById(R.id.imageButtonBack);
         buttonBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -102,8 +100,6 @@ public class FragmentSettings extends Fragment {
             }
         });
 
-        openFile();
-
         buttonClearHistory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -117,6 +113,7 @@ public class FragmentSettings extends Fragment {
                         DBHelperProvider dbHelperProvider = new DBHelperProvider(getActivity());
                         dbHelperProvider.clearHistory();
                         dialog.cancel();
+                        Toast.makeText(getActivity(), "История очищена", Toast.LENGTH_SHORT).show();
                     }
                 });
                 alertDialog.setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
@@ -156,32 +153,6 @@ public class FragmentSettings extends Fragment {
     private boolean loadCheckBoxWhiteList(){
         SharedPreferences sPref = getActivity().getSharedPreferences(ActivityMap.APP_PREFERENCES, Context.MODE_PRIVATE);
         return sPref.getBoolean(CHECK_BOX_WHITE_LIST, false);
-    }
-
-    private void openFile() {
-        try {
-            /*InputStream inputStream = getActivity().openFileInput(ServiceIntentSaveLOGs.FILE_NAME);*/
-
-
-            File file = new File(getActivity().getFilesDir(),"LOGS");
-            File gpxfile = new File(file, ServiceIntentSaveLOGs.FILE_NAME);
-            
-            FileReader fileReader1 = new FileReader(gpxfile);
-            BufferedReader reader = new BufferedReader(fileReader1);
-            String line;
-            StringBuilder builder = new StringBuilder();
-
-            while ((line = reader.readLine()) != null) {
-                builder.append(line + "\n");
-            }
-
-            fileReader1.close();
-            textViewLogs.setText(builder.toString());
-
-        } catch (Throwable t) {
-            textViewLogs.setText("логи пусты");
-            Log.d(TAG, t.toString());
-        }
     }
 
     private void stopSelf(){

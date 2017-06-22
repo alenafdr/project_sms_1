@@ -315,6 +315,7 @@ public class FragmentWhiteList extends Fragment {
             ActivityMap.transitionSettingsWhiteList = false;
             getActivity().getFragmentManager().popBackStack();
         } else {
+            someEventListener.someEvent("end");
             ft.setCustomAnimations(0, R.animator.fragment_exit);
             ft.remove(this);
             ft.commit();
