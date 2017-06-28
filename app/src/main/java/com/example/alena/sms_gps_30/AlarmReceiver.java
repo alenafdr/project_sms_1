@@ -20,8 +20,6 @@ public class AlarmReceiver extends BroadcastReceiver {
                 Log.d(TAG, "Запустил selectLocation");
                 ServiceGPS.myLocationListener.selectLocation();
             }
-        } else if (ACTION.equals(".ActivityMap")){
-            //надо ли отключать по будильнику, если в любом случае будет смс?
         }
 
     }

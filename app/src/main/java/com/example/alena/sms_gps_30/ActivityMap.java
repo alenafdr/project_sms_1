@@ -63,7 +63,6 @@ public class ActivityMap extends AppCompatActivity implements
     public static final String LAST_LAT = "last latitude";
     public static final String LAST_LNG = "last longitude";
     public static final String LAST_ACCURACY = "last accuracy";
-    public static final String ACTION = ActivityMap.class.getName() + "ACTION";
 
     private ProgressBar progressBar;
     private ImageButton imageButtonGet;
@@ -127,8 +126,6 @@ public class ActivityMap extends AppCompatActivity implements
 
         saveVersion();
     }
-
-
 
     @Override
     protected void onStart() {
@@ -242,10 +239,9 @@ public class ActivityMap extends AppCompatActivity implements
         mSettingsMap.setMyLocationButtonEnabled(true); //Включили кнопку определения своего местоположения
         mSettingsMap.setAllGesturesEnabled(true);
         mSettingsMap.setMapToolbarEnabled(true);
+        googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
         showLastLocation();
-
-        googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
     }
 
     @Override

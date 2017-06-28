@@ -34,7 +34,7 @@ public class SaveInHistoryTask extends AsyncTask<Void, Void, Void> {
     public static final String ACTION = SaveInHistoryTask.class.getName() + "newLocation";
 
     private final String TAG = ActivityMap.TAG + " task";
-    private final String KEY = "AIzaSyBkQaKiuWQDSsrZE67xKXr5t5HMqpxNJ84";
+    private final String KEY = "AIzaSyAu_VGzXZaq7C92i53SzdSZRAJ1KJjXYgo";
 
 
     private String type, number, message;
@@ -68,10 +68,6 @@ public class SaveInHistoryTask extends AsyncTask<Void, Void, Void> {
         }
 
         String name = getNameByNumber(phoneNumber);
-
-        if (type.equals(ItemHistory.TYPE_SENT)){
-            name = "Я => " + name;
-        }
 
         DBHelperProvider dbHelperProvider = new DBHelperProvider(context);
         dbHelperProvider.addItemHistoryInDB(new ItemHistory(Float.valueOf(accuracy),

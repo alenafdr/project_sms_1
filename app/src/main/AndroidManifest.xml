@@ -45,7 +45,7 @@
             android:value="@integer/google_play_services_version" />
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyBA_T0W9qGCXKwgcZ_0e8CESc0Hgr7yAZA" />
+            android:value="AIzaSyB3683Y08m_4TJXB12TbidzgehzyqTCvh8" />
 
         <service
             android:name=".ServiceSendSms"
@@ -57,11 +57,6 @@
         <service
             android:name=".ServiceIntentSMS"
             android:exported="false" />
-
-        <receiver
-            android:name=".ReceiverGPS"
-            android:enabled="true"
-            android:exported="true" />
         <receiver
             android:name=".AlarmReceiver"
             android:enabled="true"
