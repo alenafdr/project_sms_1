@@ -1,11 +1,11 @@
-package com.example.alena.sms_gps_30.help_classes;
+package com.aiprof.alena.get_gps_from_sms.help_classes;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import com.example.alena.sms_gps_30.ActivityMap;
+import com.aiprof.alena.get_gps_from_sms.ActivityMap;
 
 
 public class DBHelper extends SQLiteOpenHelper {

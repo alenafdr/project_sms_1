@@ -1,4 +1,4 @@
-package com.example.alena.sms_gps_30;
+package com.aiprof.alena.get_gps_from_sms;
 
 import android.app.Activity;
 import android.net.Uri;
@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.app.Fragment;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,9 +15,10 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.example.alena.sms_gps_30.help_classes.DBHelperProvider;
-import com.example.alena.sms_gps_30.help_classes.HistoryAdapter;
-import com.example.alena.sms_gps_30.help_classes.ItemHistory;
+import com.aiprof.alena.get_gps_from_sms.help_classes.DBHelperProvider;
+import com.aiprof.alena.get_gps_from_sms.help_classes.ItemHistory;
+import com.example.alena.sms_gps_30.R;
+import com.aiprof.alena.get_gps_from_sms.help_classes.HistoryAdapter;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.example.alena.sms_gps_30;
+package com.aiprof.alena.get_gps_from_sms;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;

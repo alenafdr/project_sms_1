@@ -1,19 +1,9 @@
-package com.example.alena.sms_gps_30;
+package com.aiprof.alena.get_gps_from_sms;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.Environment;
 import android.telephony.SmsMessage;
 import android.util.Log;
-import android.widget.Toast;
-
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 public class ReceiverSMS extends BroadcastReceiver {
 

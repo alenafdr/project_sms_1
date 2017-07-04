@@ -1,4 +1,4 @@
-package com.example.alena.sms_gps_30;
+package com.aiprof.alena.get_gps_from_sms;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -9,7 +9,6 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,13 +19,8 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.alena.sms_gps_30.help_classes.DBHelperProvider;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import com.aiprof.alena.get_gps_from_sms.help_classes.DBHelperProvider;
+import com.example.alena.sms_gps_30.R;
 
 public class FragmentSettings extends Fragment {
 
@@ -70,6 +64,11 @@ public class FragmentSettings extends Fragment {
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
         checkBox = (CheckBox) view.findViewById(R.id.checkBox);
         buttonClearHistory = (Button) view.findViewById(R.id.buttonClearHistory);
+        TextView textViewVersionName = (TextView) view.findViewById(R.id.textViewVersionName);
+
+        SharedPreferences sPref = getActivity().getSharedPreferences(ActivityMap.APP_PREFERENCES, Context.MODE_PRIVATE);
+        textViewVersionName.setText(sPref.getString(ActivityMap.VERSION, "0"));
+
         ImageButton buttonBack = (ImageButton) view.findViewById(R.id.imageButtonBack);
         buttonBack.setOnClickListener(new View.OnClickListener() {
             @Override

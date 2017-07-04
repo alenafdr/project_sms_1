@@ -1,16 +1,12 @@
-package com.example.alena.sms_gps_30;
+package com.aiprof.alena.get_gps_from_sms;
 
 import android.app.IntentService;
 import android.content.Intent;
-import android.content.Context;
-import android.os.Environment;
 import android.util.Log;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;

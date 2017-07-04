@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.alena.sms_gps_30.FragmentWhiteList"
+    tools:context="com.example.alena.sms_gps_30.com.example.alena.get_gps_from_sms.FragmentWhiteList"
     android:background="@color/white">
 
     <FrameLayout

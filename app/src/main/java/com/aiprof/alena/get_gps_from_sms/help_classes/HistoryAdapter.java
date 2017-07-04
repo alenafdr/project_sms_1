@@ -1,9 +1,6 @@
-package com.example.alena.sms_gps_30.help_classes;
+package com.aiprof.alena.get_gps_from_sms.help_classes;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
-import android.support.annotation.DrawableRes;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.alena.sms_gps_30.ActivityMap;
+import com.aiprof.alena.get_gps_from_sms.ActivityMap;
 import com.example.alena.sms_gps_30.R;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.example.alena.sms_gps_30;
+package com.aiprof.alena.get_gps_from_sms;
 
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -13,8 +13,8 @@ import android.telephony.SmsManager;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.example.alena.sms_gps_30.help_classes.ItemHistory;
-import com.example.alena.sms_gps_30.help_classes.SaveInHistoryTask;
+import com.aiprof.alena.get_gps_from_sms.help_classes.ItemHistory;
+import com.aiprof.alena.get_gps_from_sms.help_classes.SaveInHistoryTask;
 
 public class ServiceSendSms extends Service {
 

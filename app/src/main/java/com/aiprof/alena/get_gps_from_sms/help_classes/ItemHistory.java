@@ -1,4 +1,4 @@
-package com.example.alena.sms_gps_30.help_classes;
+package com.aiprof.alena.get_gps_from_sms.help_classes;
 
 
 public class ItemHistory {

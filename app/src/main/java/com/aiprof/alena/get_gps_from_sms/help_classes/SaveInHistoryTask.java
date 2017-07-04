@@ -1,4 +1,4 @@
-package com.example.alena.sms_gps_30.help_classes;
+package com.aiprof.alena.get_gps_from_sms.help_classes;
 
 
 import android.content.ContentResolver;
@@ -12,8 +12,8 @@ import android.os.AsyncTask;
 import android.provider.ContactsContract;
 import android.util.Log;
 
-import com.example.alena.sms_gps_30.ActivityMap;
-import com.example.alena.sms_gps_30.ServiceIntentSaveLOGs;
+import com.aiprof.alena.get_gps_from_sms.ActivityMap;
+import com.aiprof.alena.get_gps_from_sms.ServiceIntentSaveLOGs;
 
 import org.json.JSONArray;
 import org.json.JSONException;

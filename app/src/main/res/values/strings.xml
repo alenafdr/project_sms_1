@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SMS_GPS_3.0</string>
+    <string name="app_name">Get GPS from SMS</string>
     <string name="action_settings">Настройки</string>
     <string name="text_menu_map">Карта</string>
     <string name="text_menu_history">История</string>

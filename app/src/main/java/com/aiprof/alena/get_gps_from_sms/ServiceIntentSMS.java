@@ -1,27 +1,13 @@
-package com.example.alena.sms_gps_30;
+package com.aiprof.alena.get_gps_from_sms;
 
 import android.app.IntentService;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.Environment;
-import android.provider.ContactsContract;
 import android.util.Log;
-import android.widget.ProgressBar;
 
-import com.example.alena.sms_gps_30.help_classes.ItemHistory;
-import com.example.alena.sms_gps_30.help_classes.SaveInHistoryTask;
-import com.google.android.gms.maps.model.LatLng;
-
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
+import com.aiprof.alena.get_gps_from_sms.help_classes.ItemHistory;
+import com.aiprof.alena.get_gps_from_sms.help_classes.SaveInHistoryTask;
 
 public class ServiceIntentSMS extends IntentService {
 

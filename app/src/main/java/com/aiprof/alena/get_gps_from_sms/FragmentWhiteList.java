@@ -1,14 +1,12 @@
-package com.example.alena.sms_gps_30;
+package com.aiprof.alena.get_gps_from_sms;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -29,10 +27,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.alena.sms_gps_30.help_classes.Contact;
-import com.example.alena.sms_gps_30.help_classes.ContactsAdapter;
-import com.example.alena.sms_gps_30.help_classes.ContactsAdapterAutoComplete;
-import com.example.alena.sms_gps_30.help_classes.DBHelperProvider;
+import com.aiprof.alena.get_gps_from_sms.help_classes.Contact;
+import com.aiprof.alena.get_gps_from_sms.help_classes.DBHelperProvider;
+import com.example.alena.sms_gps_30.R;
+import com.aiprof.alena.get_gps_from_sms.help_classes.ContactsAdapter;
+import com.aiprof.alena.get_gps_from_sms.help_classes.ContactsAdapterAutoComplete;
 
 import java.io.InputStream;
 import java.util.ArrayList;

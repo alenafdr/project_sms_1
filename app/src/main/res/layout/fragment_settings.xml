@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.alena.sms_gps_30.FragmentSettings"
+    tools:context="com.example.alena.sms_gps_30.com.example.alena.get_gps_from_sms.FragmentSettings"
     android:background="@color/white">
 
     <FrameLayout
@@ -27,7 +27,13 @@
 
 
     </FrameLayout>
-
+<TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/textViewVersionName"
+    android:layout_below="@id/frameLayoutButtonBack"
+    tools:text="1.1"
+    />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -35,7 +41,7 @@
                 android:textColor="@color/black"
                 android:textSize="20sp"
                 android:id="@+id/textViewTitle"
-                android:layout_below="@id/frameLayoutButtonBack"
+                android:layout_below="@id/textViewVersionName"
                 android:layout_marginLeft="16dp"/>
 
             <TextView

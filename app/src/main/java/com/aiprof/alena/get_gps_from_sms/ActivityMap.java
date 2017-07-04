@@ -1,4 +1,4 @@
-package com.example.alena.sms_gps_30;
+package com.aiprof.alena.get_gps_from_sms;
 
 import android.app.AlertDialog;
 import android.app.FragmentTransaction;
@@ -25,10 +25,12 @@ import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.alena.sms_gps_30.help_classes.Contact;
-import com.example.alena.sms_gps_30.help_classes.ContactsAdapterAutoComplete;
+import com.example.alena.sms_gps_30.R;
+import com.aiprof.alena.get_gps_from_sms.help_classes.Contact;
+import com.aiprof.alena.get_gps_from_sms.help_classes.ContactsAdapterAutoComplete;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -487,6 +489,8 @@ public class ActivityMap extends AppCompatActivity implements
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
+
+
 
 
     }

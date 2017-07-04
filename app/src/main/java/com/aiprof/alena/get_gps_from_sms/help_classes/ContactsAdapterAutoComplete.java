@@ -1,4 +1,4 @@
-package com.example.alena.sms_gps_30.help_classes;
+package com.aiprof.alena.get_gps_from_sms.help_classes;
 
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -20,7 +20,7 @@ import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.alena.sms_gps_30.ActivityMap;
+import com.aiprof.alena.get_gps_from_sms.ActivityMap;
 import com.example.alena.sms_gps_30.R;
 
 import java.io.InputStream;

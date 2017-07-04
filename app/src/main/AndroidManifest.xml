@@ -24,7 +24,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".ActivityMap"
+            android:name="com.aiprof.alena.get_gps_from_sms.ActivityMap"
             android:launchMode="singleTask"
             android:theme="@style/splashScreenTheme">
             <intent-filter>
@@ -34,7 +34,7 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".ReceiverSMS">
+        <receiver android:name="com.aiprof.alena.get_gps_from_sms.ReceiverSMS">
             <intent-filter android:priority="999999999">
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>
@@ -48,24 +48,26 @@
             android:value="AIzaSyB3683Y08m_4TJXB12TbidzgehzyqTCvh8" />
 
         <service
-            android:name=".ServiceSendSms"
+            android:name="com.aiprof.alena.get_gps_from_sms.ServiceSendSms"
             android:exported="false" />
         <service
-            android:name=".ServiceGPS"
+            android:name="com.aiprof.alena.get_gps_from_sms.ServiceGPS"
             android:enabled="true"
             android:exported="true" />
         <service
-            android:name=".ServiceIntentSMS"
+            android:name="com.aiprof.alena.get_gps_from_sms.ServiceIntentSMS"
             android:exported="false" />
 
         <receiver
-            android:name=".AlarmReceiver"
+            android:name="com.aiprof.alena.get_gps_from_sms.AlarmReceiver"
             android:enabled="true"
             android:exported="true" />
 
         <service
-            android:name=".ServiceIntentSaveLOGs"
-            android:exported="false"></service>
+            android:name="com.aiprof.alena.get_gps_from_sms.ServiceIntentSaveLOGs"
+            android:exported="false">
+
+        </service>
     </application>
 
 </manifest>

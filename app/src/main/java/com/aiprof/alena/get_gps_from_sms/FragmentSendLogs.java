@@ -1,4 +1,4 @@
-package com.example.alena.sms_gps_30;
+package com.aiprof.alena.get_gps_from_sms;
 
 import android.app.Activity;
 import android.app.FragmentTransaction;
@@ -20,6 +20,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
+
+import com.example.alena.sms_gps_30.R;
 
 import java.io.BufferedReader;
 import java.io.File;
